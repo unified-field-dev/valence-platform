@@ -1,0 +1,25 @@
+/target-vp-extract/
+/target/
+target/
+target-*/
+**/*.rs.bk
+**/.rustc_info.json
+**/CACHEDIR.TAG
+*.rlib
+
+# Secrets / credentials — never commit. Only *.env.example templates are tracked.
+*.env
+.env
+.env.*
+*.env.*
+*.env.age
+!*.env.example
+!.env.example
+!**/*.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+id_rsa
+id_ed25519
