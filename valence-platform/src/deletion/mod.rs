@@ -8,14 +8,16 @@
 //!
 //! # Examples
 //!
-//! ```rust,ignore
+//! ```rust,no_run
 //! use std::sync::Arc;
+//! use chronon_coordinator::ChrononCoordinatorBackend;
 //! use valence_platform::deletion::dispatch::register_deletion_dispatch;
-//! use valence_platform::deletion::sweep::resync_valence_deletion_sweep_job_cron_if_present;
 //!
-//! register_deletion_dispatch(Arc::clone(&chronon_backend));
-//! resync_valence_deletion_sweep_job_cron_if_present(chronon_backend.as_ref(), &valence).await?;
-//! // Model::delete now dispatches Chronon job valence-deletion-orchestrator
+//! fn wire_deletion(chronon: Arc<dyn ChrononCoordinatorBackend>) {
+//!     register_deletion_dispatch(chronon);
+//!     // Optional: resync_valence_deletion_sweep_job_cron_if_present after default jobs exist.
+//!     // Model::delete then dispatches Chronon job valence-deletion-orchestrator.
+//! }
 //! ```
 //!
 //! # After registration

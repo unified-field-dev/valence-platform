@@ -6,14 +6,15 @@
 //!
 //! # Examples
 //!
-//! ```rust,ignore
+//! ```rust,no_run
 //! use std::sync::Arc;
-//! use valence_platform::ttl::sweep::{
-//!     register_ttl_service, resync_valence_ttl_sweep_job_cron_if_present,
-//! };
+//! use chronon_coordinator::ChrononCoordinatorBackend;
+//! use valence_platform::ttl::sweep::register_ttl_service;
 //!
-//! register_ttl_service(Arc::clone(&chronon_backend));
-//! resync_valence_ttl_sweep_job_cron_if_present(chronon_backend.as_ref(), &valence).await?;
+//! fn wire_ttl(chronon: Arc<dyn ChrononCoordinatorBackend>) {
+//!     register_ttl_service(chronon);
+//!     // Optional: resync_valence_ttl_sweep_job_cron_if_present after default jobs exist.
+//! }
 //! ```
 //!
 //! # Chronon tick

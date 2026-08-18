@@ -4,15 +4,11 @@
 //! (`LIMIT` ≤ remaining cap), queues deletes through [`valence::queue_delete_entity`],
 //! then returns. Physical delete runs on the existing deletion DAG / Boson path.
 //!
-//! # Owns
-//!
-//! - Discover + enqueue expired Deferred schema-TTL rows
-//! - Chronon job `valence-ttl-sweep` and cron resync
-//! - Host registration gate ([`register_ttl_service`])
-//!
-//! # Does not own
-//!
-//! Native Redis/Mongo expiry, IndraDB TTL, sliding TTL, long-horizon retention enrollment.
+//! Hosts call [`register_ttl_service`] once at boot. Chronon runs `valence-ttl-sweep` on a
+//! cron schedule; [`resync_valence_ttl_sweep_job_cron_if_present`] keeps the persisted job
+//! row aligned with the platform default. Discovery and enqueue target Deferred schema-TTL
+//! tables with `__valence_expire_at` stamps. Native Redis/Mongo expiry, IndraDB TTL,
+//! sliding TTL, and long-horizon retention enrollment are separate Valence/engine paths.
 
 use std::sync::{Arc, OnceLock};
 
