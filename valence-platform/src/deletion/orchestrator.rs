@@ -335,12 +335,22 @@ pub async fn run_valence_deletion_orchestrator(
 
 /// Embedded / tests: run step worker inline (no Boson).
 ///
+/// After success, poll [`super::run_service::DeletionService::get_run_json`] for terminal
+/// `status` (`completed` / `failed` / `cancelled`).
+///
+/// # Errors
+///
+/// Propagates DAG build, privacy, claim, or step-worker failures as `anyhow::Error`.
+///
 /// # Examples
 ///
 /// ```rust,ignore
 /// use valence_platform::deletion::orchestrator::run_valence_deletion_orchestrator_inline_steps;
+/// use valence_platform::deletion::run_service::DeletionService;
 ///
-/// run_valence_deletion_orchestrator_inline_steps(valence, run_id).await?;
+/// run_valence_deletion_orchestrator_inline_steps(valence.clone(), run_id.clone()).await?;
+/// let run = DeletionService::get_run_json(&run_id, &valence).await?.expect("run");
+/// assert_eq!(run.get("status").and_then(|s| s.as_str()), Some("completed"));
 /// ```
 pub async fn run_valence_deletion_orchestrator_inline_steps(
     valence: Valence,

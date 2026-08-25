@@ -9,6 +9,27 @@
 //! row aligned with the platform default. Discovery and enqueue target Deferred schema-TTL
 //! tables with `__valence_expire_at` stamps. Native Redis/Mongo expiry, IndraDB TTL,
 //! sliding TTL, and long-horizon retention enrollment are separate Valence/engine paths.
+//!
+//! # Guide: sweep expired rows
+//!
+//! **Prerequisites:** [`register_ttl_service`]; Deferred TTL schemas; deletion path for drain.
+//!
+//! ```rust,no_run
+//! use valence_platform::ttl::sweep::{run_valence_ttl_sweep_inline, DEFAULT_TTL_SWEEP_CAP};
+//!
+//! # async fn demo(valence: valence::Valence) -> anyhow::Result<()> {
+//! let report = run_valence_ttl_sweep_inline(valence, DEFAULT_TTL_SWEEP_CAP).await?;
+//! assert!(report.queued_deletes >= 1);
+//! assert_eq!(report.run_ids.len(), report.queued_deletes as usize);
+//! # Ok(())
+//! # }
+//! ```
+//!
+//! **Outcome:** [`TtlSweepReport`] with queued deletes and drained `run_ids`. Host Chronon path
+//! calls [`sweep_expired_ttl_rows`] only (no inline drain).
+//!
+//! **Failure / next:** see [`crate::ttl#sweep-expired-rows`]; native backends skipped via
+//! [`ttl_capability_included_in_deferred_sweep`].
 
 use std::sync::{Arc, OnceLock};
 
@@ -280,6 +301,8 @@ fn error_class(e: &valence::Error) -> &'static str {
 /// use valence_platform::ttl::sweep::{run_valence_ttl_sweep_inline, DEFAULT_TTL_SWEEP_CAP};
 ///
 /// let report = run_valence_ttl_sweep_inline(valence, DEFAULT_TTL_SWEEP_CAP).await?;
+/// assert!(report.queued_deletes >= 1);
+/// assert_eq!(report.run_ids.len(), report.queued_deletes as usize);
 /// ```
 pub async fn run_valence_ttl_sweep_inline(
     valence: Valence,

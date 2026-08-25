@@ -66,6 +66,10 @@ impl DeletionService {
     }
 
     /// Create a new deletion run row and return its id.
+    ///
+    /// # Errors
+    ///
+    /// Backend create failures for `valence_deletion_run`.
     pub async fn create_run(
         root_table: &str,
         root_record_id: &str,

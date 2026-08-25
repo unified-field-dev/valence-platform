@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use valence::{
     Actor, DatabaseBackend, DatabaseRouter, RegisterBackendLogicalNamesOptions, SqliteBackend,
-    Valence, MEM_ENGINE_ID, SQLITE_ENGINE_ID,
+    Valence, SQLITE_ENGINE_ID,
 };
 
 fn ownership_env_defaults() {
@@ -25,10 +25,7 @@ pub async fn sqlite_valence(operation: &str) -> anyhow::Result<Valence> {
         &mut router,
         backend,
         &["default"],
-        RegisterBackendLogicalNamesOptions {
-            // Platform system schemas use the SQLite engine id; alias keeps one store.
-            register_alias_engine_id: Some(MEM_ENGINE_ID),
-        },
+        RegisterBackendLogicalNamesOptions::default(),
     );
     Ok(Valence::builder()
         .database_router(Arc::new(router))

@@ -31,6 +31,10 @@ pub fn force_deletion_chronon_unregistered_for_tests(force: bool) {
 
 /// Same as the delete dispatch path: `run_now` the manual `valence-deletion-orchestrator` with
 /// `{"run_id": run_id}` (bare uuid), using the Chronon instance from [`register_deletion_dispatch`].
+///
+/// # Errors
+///
+/// Chronon not registered, job missing, or `run_now` failure.
 pub async fn run_deletion_orchestrator_now_for_registered_backend(
     run_id: &str,
 ) -> valence::Result<()> {

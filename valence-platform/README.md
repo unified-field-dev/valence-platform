@@ -25,12 +25,16 @@ valence-platform = { git = "https://github.com/unified-field-dev/valence-platfor
   (`register_deletion_dispatch`, `register_ttl_service`, `register_iter_dispatch`,
   cron resync helpers)
 - Start an iter with `IterService::start` (same path on every backend)
+- Cascade delete under the requester actor; budgeted Deferred TTL sweep
 - Depend on generated system models (`ValenceIterRun`, …)
 
 List an iter type in your schema `iters: [...]` and implement `should_run` /
 `execute` on that type using **uf-valence** (codegen submits `IterDescriptor`);
-this crate does not define app iterators. Runnable seeded demos:
-[examples/README.md](examples/README.md).
+this crate does not define app iterators.
+
+**Source of truth for teaching:** `cargo doc -p valence-platform` (crate root
+Features → Getting started → Concern → API Guide column → module guides). Runnable
+seeded demos: [examples/README.md](examples/README.md).
 
 ## Modules
 
@@ -49,6 +53,13 @@ after the host-facing examples.
 workers. The same pattern applies for deletion and TTL registers at boot. Seeded
 examples under [examples/README.md](examples/README.md) drive an inline harness when
 Chronon is not wired.
+
+## Feature flags
+
+| Feature | Effect |
+|---------|--------|
+| (default) | Platform system schemas use SQLite |
+| `db-hybrid` | Platform system schemas use the hybrid engine |
 
 ## Examples
 

@@ -1,0 +1,67 @@
+workspace = "valence-platform"
+doc_root = "target-valence-platform/doc"
+
+[[task]]
+label = "Iter register"
+page = "valence_platform/iter/index.html"
+anchor = "register-at-boot"
+requires = ["register_iter_dispatch"]
+outcome = ["assert", "is_iter_chronon_registered"]
+
+[[task]]
+label = "Iter start"
+page = "valence_platform/iter/index.html"
+anchor = "start-an-iter"
+requires = ["IterService"]
+outcome = ["assert", "Ok", "?"]
+
+[[task]]
+label = "Deletion register"
+page = "valence_platform/deletion/index.html"
+anchor = "register-at-boot"
+requires = ["register_deletion"]
+outcome = ["assert", "Ok"]
+
+[[task]]
+label = "Deletion cascade"
+page = "valence_platform/deletion/index.html"
+anchor = "cascade-a-delete"
+requires = ["delete", "orchestrator"]
+outcome = ["assert", "Ok", "?"]
+
+[[task]]
+label = "Deletion sweep"
+page = "valence_platform/deletion/index.html"
+anchor = "sweep-queued-runs"
+requires = ["sweep", "reenqueue"]
+outcome = ["assert", "Ok", "?"]
+
+[[task]]
+label = "TTL register"
+page = "valence_platform/ttl/index.html"
+anchor = "register-at-boot"
+requires = ["register_ttl"]
+outcome = ["assert", "Ok"]
+
+[[task]]
+label = "TTL sweep"
+page = "valence_platform/ttl/index.html"
+anchor = "sweep-expired-rows"
+requires = ["run_valence_ttl_sweep_inline"]
+outcome = ["assert", "queued_deletes"]
+
+[[capability]]
+task = "Iter start"
+token = "IterService"
+baseline_strength = "S3"
+baseline_reachability = "guide-destination"
+page = "valence_platform/iter/index.html"
+anchor = "start-an-iter"
+
+[[capability]]
+task = "TTL sweep"
+token = "run_valence_ttl_sweep_inline"
+baseline_strength = "S4"
+baseline_reachability = "guide-destination"
+page = "valence_platform/ttl/index.html"
+anchor = "sweep-expired-rows"

@@ -5,6 +5,28 @@
 //! `VALENCE_DEBUG_ADMIN_TOKEN` and send the same value in request header
 //! `x-valence-debug-token`. Missing env token or header mismatch → **401**.
 //!
+//! # Guide: wire the debug router
+//!
+//! **Prerequisites:** host Axum state that implements
+//! `FromRef<AppState>` for [`DeletionDebugWiring`]; Chronon/Boson optional on the wiring.
+//!
+//! ```rust,ignore
+//! use valence_platform::deletion::debug::{deletion_debug_router, DeletionDebugWiring};
+//!
+//! // On AppState: impl FromRef<AppState> for DeletionDebugWiring { … }
+//! let app = host_router.merge(deletion_debug_router::<AppState>());
+//! // Env: VALENCE_DEBUG_DELETIONS=1, VALENCE_DEBUG_ADMIN_TOKEN=<secret>
+//! // Header: x-valence-debug-token: <secret>
+//! // GET /__debug/valence/deletions → 200 JSON when gated correctly; else 404/401.
+//! ```
+//!
+//! **Outcome:** overview JSON lists recent runs and whether a deletion dispatcher is registered;
+//! trace JSON joins Valence run + optional Chronon/Boson.
+//!
+//! **Failure:** unset env → **404**; empty token env or header mismatch → **401**.
+//!
+//! **Next:** [`crate::deletion`] cascade guide; SECURITY.md for the operator contract.
+//!
 //! # Endpoints
 //!
 //! - `GET /__debug/valence/deletions?limit=50` — recent deletion runs (optional `limit`,
@@ -160,6 +182,18 @@ pub fn authorize_deletion_debug_request(
 }
 
 /// Axum routes under `/__debug/valence/*` using [`DeletionDebugWiring`] from state `S`.
+///
+/// Merge into the host router after implementing `FromRef<S> for DeletionDebugWiring`.
+/// Routes stay **404** until `VALENCE_DEBUG_DELETIONS=1` and a matching
+/// `x-valence-debug-token` / `VALENCE_DEBUG_ADMIN_TOKEN` pair is configured.
+///
+/// # Examples
+///
+/// ```rust,ignore
+/// use valence_platform::deletion::debug::deletion_debug_router;
+///
+/// let app = host_router.merge(deletion_debug_router::<AppState>());
+/// ```
 pub fn deletion_debug_router<S>() -> Router<S>
 where
     S: Send + Sync + Clone + 'static,

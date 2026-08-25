@@ -42,7 +42,7 @@ use serde_json::json;
 use sqlite_boot::sqlite_valence;
 use valence::prelude::*;
 use valence::{
-    Database, DatabaseFromEngine, IterEvaluation, QueryCore, RecordId, Valence, MEM_ENGINE_ID,
+    Database, DatabaseFromEngine, IterEvaluation, QueryCore, RecordId, Valence, SQLITE_ENGINE_ID,
 };
 use valence_platform::iter::run_service::{IterRunOptions, IterService};
 use valence_platform::{ValenceIterRun, ValenceIterRunStatus};
@@ -52,7 +52,7 @@ pub const DEMO_TABLE: &str = "demo_note";
 /// Must match the type listed in `iters: [MarkProcessedIter]`.
 pub const DEMO_ITER: &str = "MarkProcessedIter";
 
-const DEMO_NOTE_DB: DatabaseFromEngine = Database::from_engine("default", MEM_ENGINE_ID);
+const DEMO_NOTE_DB: DatabaseFromEngine = Database::from_engine("default", SQLITE_ENGINE_ID);
 
 /// Row shape for `demo_note` (mirrors what valence-codegen would emit for this schema).
 #[derive(Debug, Clone, Serialize, Deserialize)]

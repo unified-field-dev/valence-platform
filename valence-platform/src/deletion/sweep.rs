@@ -4,6 +4,28 @@
 //! The orchestrator body uses
 //! [`super::run_service::DeletionService::try_claim_queued_to_scanning`] so concurrent
 //! `run_now` + sweep cannot double-insert steps.
+//!
+//! # Guide: sweep queued runs
+//!
+//! **Prerequisites:** [`super::dispatch::register_deletion_dispatch`]; Chronon job
+//! `valence-deletion-sweep-queued` (default cron `*/10 * * * * *`).
+//!
+//! ```rust,ignore
+//! use valence_platform::deletion::sweep::{
+//!     reenqueue_swept_queued_runs, resync_valence_deletion_sweep_job_cron_if_present,
+//!     DEFAULT_STALE_SECS,
+//! };
+//!
+//! resync_valence_deletion_sweep_job_cron_if_present(chronon.as_ref(), &valence).await?;
+//! let n = reenqueue_swept_queued_runs(&valence, DEFAULT_STALE_SECS, 32).await?;
+//! assert!(n <= 32);
+//! ```
+//!
+//! **Outcome:** each successful call is another `run_now` of `valence-deletion-orchestrator`.
+//! Unregistered Chronon → `Ok(0)`.
+//!
+//! **Failure / next:** per-run failures are logged and skipped; see the parent
+//! [`crate::deletion#sweep-queued-runs`] guide.
 
 use super::run_service::DeletionService;
 use chrono::Utc;
@@ -20,6 +42,10 @@ const DEFAULT_SWEEP_CAP: u32 = 32;
 /// Re-trigger `run_now` for up to `cap` runs in `queued` with `requested_at` older than
 /// `now() - older_than_secs`. Returns the number of successful `run_now` calls. If Chronon
 /// was not registered via [`super::dispatch::register_deletion_dispatch`], returns `0`.
+///
+/// # Errors
+///
+/// Propagates Valence list/query failures. Individual `run_now` failures are logged and skipped.
 pub async fn reenqueue_swept_queued_runs(
     v: &Valence,
     older_than_secs: u64,
