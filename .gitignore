@@ -23,3 +23,7 @@ target-*/
 *.crt
 id_rsa
 id_ed25519
+
+# Guide audit contracts live in ~/unified-field/uf-docs-guide-contracts (private)
+docs/doc-guide-*.json
+docs/doc-guide-*.toml
