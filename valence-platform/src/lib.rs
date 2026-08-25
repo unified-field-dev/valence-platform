@@ -7,19 +7,38 @@
 //!
 //! ## Features
 //!
-//! - **Table iters** — register Chronon at boot, then [`iter::run_service::IterService::start`] to
-//!   page a table and run per-row `should_run` / `execute` ([`iter`] guide)
-//! - **Cascade deletion** — wire [`deletion::dispatch::register_deletion_dispatch`] so
-//!   `Model::delete` runs a DAG under the requester actor ([`deletion`] guide)
-//! - **Deferred TTL** — register a budgeted Chronon sweep that queues expired rows into deletion
-//!   ([`ttl`] guide)
-//! - **Deletion debug** — opt-in Axum routes behind env/header gates
-//!   ([debug Guide](crate::deletion::debug#guide-wire-the-debug-router))
-//! - **Boson task names** — iter
-//!   [Guide](crate::iter::boson_setup#guide-boson-task-names)
-//!   ([`VALENCE_ITER_ROW_WORKER_TASK`](crate::iter::boson_setup::VALENCE_ITER_ROW_WORKER_TASK));
-//!   deletion [Guide](crate::deletion::boson_setup#guide-boson-task-names)
-//!   ([`VALENCE_DELETION_STEP_WORKER_TASK`](crate::deletion::boson_setup::VALENCE_DELETION_STEP_WORKER_TASK))
+//! - **Table iters** — Pages a Valence table and runs per-row `should_run` / `execute` through
+//!   Chronon and Boson after you register dispatch at host boot.
+//!   [Get started](crate::iter#register-at-boot).
+//!   [Start an iter](crate::iter#start-an-iter).
+//!   API reference: [`iter::dispatch::register_iter_dispatch`],
+//!   [`iter::run_service::IterService::start`].
+//! - **Cascade deletion** — Runs a privacy-aware deletion DAG under the requester actor when
+//!   `Model::delete` fires, with an optional Chronon sweep for stale queued runs.
+//!   [Get started](crate::deletion#register-at-boot).
+//!   [Cascade a delete](crate::deletion#cascade-a-delete).
+//!   [Sweep queued runs](crate::deletion#sweep-queued-runs).
+//!   API reference: [`deletion::dispatch::register_deletion_dispatch`],
+//!   [`deletion::orchestrator::run_valence_deletion_orchestrator_inline_steps`],
+//!   [`deletion::sweep::reenqueue_swept_queued_runs`],
+//!   [`deletion::sweep::resync_valence_deletion_sweep_job_cron_if_present`].
+//! - **Deferred TTL** — Discovers expired Deferred rows under a budget and queues them into the
+//!   deletion path on a Chronon tick (or an inline host call).
+//!   [Get started](crate::ttl#register-at-boot).
+//!   [Sweep expired rows](crate::ttl#sweep-expired-rows).
+//!   API reference: [`ttl::sweep::register_ttl_service`],
+//!   [`ttl::sweep::run_valence_ttl_sweep_inline`],
+//!   [`ttl::sweep::resync_valence_ttl_sweep_job_cron_if_present`].
+//! - **Deletion debug** — Exposes opt-in Axum routes that list deletion runs and traces behind
+//!   env and header gates for local debugging.
+//!   [Get started](crate::deletion::debug#guide-wire-the-debug-router).
+//!   API reference: [`deletion::debug::deletion_debug_router`].
+//! - **Boson task names** — Holds the string constants hosts and workers must share so Boson
+//!   dispatches iter row work and deletion steps to the right task bodies.
+//!   [Get started](crate::iter::boson_setup#guide-boson-task-names).
+//!   [Boson deletion task names](crate::deletion::boson_setup#guide-boson-task-names).
+//!   API reference: [`iter::boson_setup::VALENCE_ITER_ROW_WORKER_TASK`],
+//!   [`deletion::boson_setup::VALENCE_DELETION_STEP_WORKER_TASK`].
 //!
 //! ## Getting started
 //!
@@ -41,25 +60,8 @@
 //!
 //! After Chronon default jobs exist, call the matching `resync_*_cron_if_present` helpers so
 //! sweep jobs pick up host cron overrides. Then start iters with
-//! [`iter::run_service::IterService::start`].
-//!
-//! ## Concern → API
-//!
-//! | Concern | Guide | API reference |
-//! |---------|-------|---------------|
-//! | Wire deletion at host boot | [Register at boot](crate::deletion#register-at-boot) | [`deletion::dispatch::register_deletion_dispatch`], [`deletion::sweep::resync_valence_deletion_sweep_job_cron_if_present`] |
-//! | Drive a cascade delete | [Cascade a delete](crate::deletion#cascade-a-delete) | [`deletion::orchestrator::run_valence_deletion_orchestrator_inline_steps`], [`deletion::run_service::DeletionService`] |
-//! | Re-queue stale deletion runs | [Sweep queued runs](crate::deletion#sweep-queued-runs) | [`deletion::sweep::reenqueue_swept_queued_runs`], [`deletion::sweep::resync_valence_deletion_sweep_job_cron_if_present`] |
-//! | Wire Deferred TTL at host boot | [Register at boot](crate::ttl#register-at-boot) | [`ttl::sweep::register_ttl_service`], [`ttl::sweep::resync_valence_ttl_sweep_job_cron_if_present`] |
-//! | Run a TTL sweep tick | [Sweep expired rows](crate::ttl#sweep-expired-rows) | [`ttl::sweep::sweep_expired_ttl_rows`], [`ttl::sweep::run_valence_ttl_sweep_inline`] |
-//! | Wire iter Chronon at host boot | [Register at boot](crate::iter#register-at-boot) | [`iter::dispatch::register_iter_dispatch`] |
-//! | Start an iter | [Start an iter](crate::iter#start-an-iter) | [`iter::run_service::IterService::start`] |
-//! | Deletion debug router | [Wire the debug router](crate::deletion::debug#guide-wire-the-debug-router) | [`deletion::debug::deletion_debug_router`] |
-//! | Boson iter task name | [Boson task names](crate::iter::boson_setup#guide-boson-task-names) | [`iter::boson_setup::VALENCE_ITER_ROW_WORKER_TASK`] |
-//! | Boson deletion task name | [Boson task names](crate::deletion::boson_setup#guide-boson-task-names) | [`deletion::boson_setup::VALENCE_DELETION_STEP_WORKER_TASK`] |
-//!
-//! Chronon scripts, Boson workers, and paging live on the [`iter`], [`deletion`], and [`ttl`]
-//! module pages after you call the host APIs.
+//! [`iter::run_service::IterService::start`]. Chronon scripts, Boson workers, and paging live on
+//! the [`iter`], [`deletion`], and [`ttl`] module pages after you call the host APIs.
 //!
 //! ## Examples
 //!
@@ -85,7 +87,7 @@
 //! | `db-hybrid` | [`DEFAULT_PLATFORM_STORAGE`] switches to the hybrid engine (`valence/hybrid`) |
 //!
 //! Hybrid hosts also exercise `tests/ttl_sweep_hybrid.rs` and `tests/hybrid_m2m_delete.rs`.
-//! Doc builds with default features and `--all-features` / `db-hybrid` share the same Concern → API
+//! Doc builds with default features and `--all-features` / `db-hybrid` share the same Features
 //! and Guide links; only [`DEFAULT_PLATFORM_STORAGE`] and hybrid-gated tests differ.
 //!
 //! ## Further reading

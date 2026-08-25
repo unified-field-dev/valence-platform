@@ -7,6 +7,10 @@
 //!
 //! # Guide: wire the debug router
 //!
+//! The deletion debug router exposes run lists and traces for local or split-process debugging
+//! without opening those routes in production by default. Merge it when the host builds its Axum
+//! router; gates stay closed until env and header checks pass.
+//!
 //! **Prerequisites:** host Axum state that implements
 //! `FromRef<AppState>` for [`DeletionDebugWiring`]; Chronon/Boson optional on the wiring.
 //!

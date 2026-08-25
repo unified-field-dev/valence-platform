@@ -4,8 +4,8 @@
 //!
 //! # Guide: Boson task names
 //!
-//! Use these string constants when registering or matching the deletion step worker; keep the
-//! same literal the embedded Boson task config expects.
+//! This module holds the deletion step-worker task name Boson must enqueue. Keeping the constant
+//! aligned with the embedded task config avoids silent dispatch misses when the worker starts.
 //!
 //! **Prerequisites:** host Boson startup that embeds default task configs via
 //! [`boson_coordinator::ensure_default_task_configs_embedded`].

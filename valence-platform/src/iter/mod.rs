@@ -1,9 +1,15 @@
-//! Start and drive Valence table iters.
+//! Page through a Valence table and apply per-row logic from the schema.
 //!
-//! At host boot, call [`dispatch::register_iter_dispatch`]. Start a run with
-//! [`run_service::IterService::start`] (create + Chronon `run_now`).
+//! A run walks row ids in order, calls `should_run`, then `execute` on matching rows. Register
+//! Chronon at host boot with [`dispatch::register_iter_dispatch`], then
+//! [`run_service::IterService::start`] to create the run and `run_now` the orchestrator (Boson
+//! does the row work).
 //!
 //! # Register at boot
+//!
+//! Iter Chronon wiring installs the coordinator backend so later
+//! [`run_service::IterService::start`] calls can `run_now` the orchestrator. Call this once at
+//! host boot before any iter run is created.
 //!
 //! **Prerequisites:** a Chronon coordinator backend and default job
 //! `valence-iter-orchestrator` (manual) ensured by Chronon script registration.
@@ -24,6 +30,10 @@
 //! **Next:** [Start an iter](#start-an-iter).
 //!
 //! # Start an iter
+//!
+//! Starting an iter creates a platform run row and asks Chronon to drive
+//! `valence-iter-orchestrator`. Use this when a host or operator needs a table scan with per-row
+//! `should_run` / `execute` without hand-rolling Chronon payloads.
 //!
 //! **Prerequisites:** [`dispatch::register_iter_dispatch`] at boot; schema lists the iter type in
 //! `iters: [...]` with `should_run` / `execute` implemented (uf-valence codegen).

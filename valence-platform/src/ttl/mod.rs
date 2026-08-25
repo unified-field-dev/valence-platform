@@ -1,10 +1,13 @@
-//! Deferred schema TTL: host registration and budgeted Chronon sweep.
+//! Expire Deferred rows past their deadline and queue them into deletion under a budget.
 //!
-//! At boot, call [`sweep::register_ttl_service`], then optionally
+//! At host boot, call [`sweep::register_ttl_service`], then optionally
 //! [`sweep::resync_valence_ttl_sweep_job_cron_if_present`]. Tests and embedded hosts can run one
-//! discover+enqueue tick with [`sweep::run_valence_ttl_sweep_inline`].
+//! discover-and-enqueue tick with [`sweep::run_valence_ttl_sweep_inline`].
 //!
 //! # Register at boot
+//!
+//! TTL registration wires the budgeted Deferred expiry sweep into Chronon so expired rows can
+//! enqueue into the deletion DAG. Call this once at host boot after deletion dispatch is available.
 //!
 //! **Prerequisites:** Chronon coordinator backend; default cron job `valence-ttl-sweep`
 //! (`*/30 * * * * *`); deletion dispatch already wired so queued deletes can complete.
@@ -35,6 +38,10 @@
 //! **Next:** [Sweep expired rows](#sweep-expired-rows).
 //!
 //! # Sweep expired rows
+//!
+//! A TTL sweep finds Deferred rows past `__valence_expire_at` under a shared budget and queues
+//! deletes for the cascade path. Chronon runs this when the job `valence-ttl-sweep` ticks; tests
+//! and embedded hosts call the inline helper for one discover-and-enqueue pass.
 //!
 //! **Prerequisites:** [`sweep::register_ttl_service`] (or inline helper which marks registered);
 //! Deferred TTL schemas with `__valence_expire_at`; deletion path available for physical delete.

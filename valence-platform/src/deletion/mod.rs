@@ -1,12 +1,16 @@
-//! Cascade deletion for Valence: host wiring, orchestrator, and related helpers.
+//! Delete a row and its cascade targets under the requester's privacy rules.
 //!
-//! At boot, call [`dispatch::register_deletion_dispatch`] so `Model::delete` can `run_now` the
+//! At host boot, call [`dispatch::register_deletion_dispatch`] so `Model::delete` can `run_now` the
 //! Chronon deletion orchestrator. Optionally
 //! [`sweep::resync_valence_deletion_sweep_job_cron_if_present`] after Chronon jobs exist.
 //! Tests and embedded hosts can drive a queued run with
 //! [`orchestrator::run_valence_deletion_orchestrator_inline_steps`].
 //!
 //! # Register at boot
+//!
+//! Deletion Chronon wiring lets `Model::delete` hand off a cascade run to the orchestrator job.
+//! Call this once at host boot so privacy-aware deletes can `run_now` after the Valence run row
+//! exists.
 //!
 //! **Prerequisites:** Chronon coordinator backend; default jobs include manual
 //! `valence-deletion-orchestrator` and cron `valence-deletion-sweep-queued` (`*/10 * * * * *`).
@@ -37,6 +41,10 @@
 //!
 //! # Cascade a delete
 //!
+//! A cascade delete walks the schema DAG under the requester actor so child rows and Restrict
+//! rules stay privacy-correct. On a host, `Model::delete` creates the run; tests and embedded
+//! hosts drive the same steps inline when Chronon is absent.
+//!
 //! **Prerequisites:** deletion dispatch registered (host) **or** an inline harness for tests;
 //! schema `on_delete` / CascadeDelete connections; requester actor stored on the run.
 //!
@@ -49,6 +57,7 @@
 //! Embedded / tests without Chronon (full call sequence + observable outcome):
 //!
 //! ```rust,no_run
+//! // Host path after register: Model::delete creates the run Chronon drives.
 //! use serde_json::json;
 //! use valence::Actor;
 //! use valence_platform::deletion::orchestrator::run_valence_deletion_orchestrator_inline_steps;
@@ -89,6 +98,10 @@
 //! **Next:** [Sweep queued runs](#sweep-queued-runs); debug with [`debug`].
 //!
 //! # Sweep queued runs
+//!
+//! The deletion sweep re-issues `run_now` for stale `queued` runs so a crashed orchestrator does
+//! not leave work stranded. Chronon calls this when the job `valence-deletion-sweep-queued` ticks;
+//! hosts can also invoke the helper during recovery.
 //!
 //! **Prerequisites:** [`dispatch::register_deletion_dispatch`]; Chronon job
 //! `valence-deletion-sweep-queued`.
