@@ -122,13 +122,13 @@ valence-codegen = { package = "uf-valence-codegen", version = "0.1.5" }
 anyhow = "1"
 async-trait = "0.1"
 axum = { version = "0.8.4", default-features = false, features = ["http1", "json", "query"] }
-boson-core = { version = "0.1.3" }
-boson-macros = { version = "0.1.3" }
-boson-runtime = { version = "0.1.3", default-features = false }
+boson-core = { version = "0.1.4" }
+boson-macros = { version = "0.1.4" }
+boson-runtime = { version = "0.1.4", default-features = false }
 boson-valence-identity = { git = "https://github.com/unified-field-dev/boson-valence-identity", branch = "main" }
 chrono = { version = "0.4", default-features = false, features = ["clock", "std", "serde"] }
-chronon-core = { version = "0.1.3" }
-chronon-executor = { version = "0.1.3" }
+chronon-core = { version = "0.1.4" }
+chronon-executor = { version = "0.1.4" }
 chronon-coordinator-macros = { git = "https://github.com/unified-field-dev/chronon-coordinator-macros", branch = "main" }
 chronon-valence-identity = { git = "https://github.com/unified-field-dev/chronon-valence-identity", branch = "main" }
 inventory = "0.3"
@@ -141,16 +141,16 @@ uuid = { version = "1", features = ["v4"] }
 
 # Coordinator / identity kits still git-pin older Chronon/Valence/Boson; force one crates.io graph.
 [patch."https://github.com/unified-field-dev/chronon"]
-chronon-core = { version = "0.1.3" }
-chronon-executor = { version = "0.1.3" }
-chronon-scheduler = { version = "0.1.3" }
-chronon-telemetry = { version = "0.1.3" }
+chronon-core = { version = "0.1.4" }
+chronon-executor = { version = "0.1.4" }
+chronon-scheduler = { version = "0.1.4" }
+chronon-telemetry = { version = "0.1.4" }
 
 [patch."https://github.com/unified-field-dev/boson"]
-boson-core = { version = "0.1.3" }
-boson-macros = { version = "0.1.3" }
-boson-runtime = { version = "0.1.3" }
-boson-telemetry = { version = "0.1.3" }
+boson-core = { version = "0.1.4" }
+boson-macros = { version = "0.1.4" }
+boson-runtime = { version = "0.1.4" }
+boson-telemetry = { version = "0.1.4" }
 
 [patch."https://github.com/unified-field-dev/valence"]
 uf-valence = { version = "0.1.5" }
