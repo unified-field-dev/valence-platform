@@ -53,6 +53,8 @@ match_wildcard_for_single_variants = "allow"
 items_after_statements = "allow"
 redundant_clone = "allow"
 unused_async = "allow"
+# Iter hooks are async by API contract even when a demo body has no `.await`.
+unused_async_trait_impl = "allow"
 used_underscore_binding = "allow"
 uninlined_format_args = "allow"
 cast_possible_truncation = "allow"
