@@ -65,13 +65,12 @@
 //!
 //! ## Examples
 //!
-//! | Level | Where | What |
-//! |-------|-------|------|
-//! | Highlight | Getting started above | Boot trilogy: iter + deletion + TTL registration |
-//! | Mid | [`iter`], [`deletion`], [`ttl`] module guides | Per-path registration, primary calls, outcomes |
-//! | Detailed | `examples/iter_orchestrator_sqlite` | Seeded inline iter (no Chronon/Boson); host path is [`IterService::start`](iter::run_service::IterService::start) |
-//! | Detailed | `examples/deletion_cascade_sqlite` | Parent/child cascade under requester actor (inline orchestrator) |
-//! | Detailed | `examples/ttl_sweep_sqlite` | Expired Deferred row → budgeted sweep → physical delete |
+//! Boot trilogy (iter + deletion + TTL registration) in [Getting started](#getting-started).
+//! Per-path registration, primary calls, and outcomes on [`iter`], [`deletion`], and
+//! [`ttl`] module guides. Runnable SQLite hosts: `iter_orchestrator_sqlite` (seeded
+//! inline iter; host path is [`IterService::start`](iter::run_service::IterService::start)),
+//! `deletion_cascade_sqlite` (parent/child cascade under requester actor),
+//! `ttl_sweep_sqlite` (expired Deferred row → budgeted sweep → physical delete).
 //!
 //! ```bash
 //! cargo run -p valence-platform --example iter_orchestrator_sqlite

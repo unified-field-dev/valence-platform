@@ -22,6 +22,7 @@ export CARGO_TARGET_DIR=target-valence-platform
 cargo fmt --all --check
 cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace --all-features
+cargo doc --workspace --no-deps --all-features
 ```
 
 Optional narrower runs:
