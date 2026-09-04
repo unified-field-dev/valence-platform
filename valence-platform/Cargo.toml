@@ -1,0 +1,44 @@
+[package]
+name = "valence-platform"
+version = "0.1.0"
+edition = "2021"
+license.workspace = true
+description = "Chronon/Boson orchestration for Valence table iters, cascade deletion, and Deferred TTL on Unified Field hosts"
+repository = "https://github.com/unified-field-dev/valence-platform"
+publish = false
+
+[features]
+default = []
+# Platform system schemas on Valence hybrid engine (default is SQLite).
+db-hybrid = ["valence/hybrid"]
+
+[lints]
+workspace = true
+
+[dependencies]
+axum = { workspace = true, features = ["http1", "json", "query"] }
+anyhow.workspace = true
+async-trait.workspace = true
+chrono = { version = "0.4", features = ["clock"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+tokio = { workspace = true, features = ["time"] }
+uuid = { workspace = true }
+log.workspace = true
+
+quark = { workspace = true }
+inventory = { workspace = true }
+valence = { workspace = true }
+chronon-coordinator = { workspace = true }
+chronon-coordinator-macros = { workspace = true }
+chronon-core = { workspace = true }
+chronon-executor = { workspace = true }
+chronon-valence-identity = { workspace = true }
+boson-coordinator = { workspace = true, default-features = false }
+boson-core.workspace = true
+boson-runtime = { workspace = true, default-features = false }
+boson-valence-identity = { workspace = true }
+boson-macros = { workspace = true }
+
+[build-dependencies]
+valence-codegen = { workspace = true }

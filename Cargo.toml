@@ -1,0 +1,158 @@
+[workspace]
+resolver = "2"
+members = [
+    "valence-platform",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+# Deny undocumented public items. Only crates that opt in with `[lints]
+# workspace = true` inherit this; unlisted workspace members are unaffected
+# until they opt in too.
+[workspace.lints.rust]
+missing_docs = "deny"
+dead_code = "deny"
+unexpected_cfgs = "allow"
+
+[workspace.lints.rustdoc]
+redundant_explicit_links = "allow"
+broken_intra_doc_links = "allow"
+private_intra_doc_links = "allow"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+dbg_macro = "deny"
+print_stdout = "deny"
+print_stderr = "deny"
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+return_self_not_must_use = "allow"
+# Pedantic/nursery noise retained from valence-platform; deny set above stays active.
+wildcard_imports = "allow"
+significant_drop_tightening = "allow"
+future_not_send = "allow"
+doc_markdown = "allow"
+use_self = "allow"
+needless_pass_by_value = "allow"
+missing_const_for_fn = "allow"
+option_if_let_else = "allow"
+too_many_lines = "allow"
+map_unwrap_or = "allow"
+redundant_closure_for_method_calls = "allow"
+single_match = "allow"
+single_match_else = "allow"
+match_wildcard_for_single_variants = "allow"
+items_after_statements = "allow"
+redundant_clone = "allow"
+unused_async = "allow"
+# Iter hooks are async by API contract even when a demo body has no `.await`.
+unused_async_trait_impl = "allow"
+used_underscore_binding = "allow"
+uninlined_format_args = "allow"
+cast_possible_truncation = "allow"
+implicit_clone = "allow"
+trait_duplication_in_bounds = "allow"
+option_option = "allow"
+unnecessary_wraps = "allow"
+unnecessary_trailing_comma = "allow"
+elidable_lifetime_names = "allow"
+trivially_copy_pass_by_ref = "allow"
+cast_sign_loss = "allow"
+cast_possible_wrap = "allow"
+ref_option = "allow"
+manual_let_else = "allow"
+cognitive_complexity = "allow"
+match_same_arms = "allow"
+cast_lossless = "allow"
+cast_precision_loss = "allow"
+unnested_or_patterns = "allow"
+too_long_first_doc_paragraph = "allow"
+assigning_clones = "allow"
+default_trait_access = "allow"
+derive_partial_eq_without_eq = "allow"
+collection_is_never_read = "allow"
+if_not_else = "allow"
+ignored_unit_patterns = "allow"
+fn_params_excessive_bools = "allow"
+semicolon_if_nothing_returned = "allow"
+struct_field_names = "allow"
+redundant_pub_crate = "allow"
+large_types_passed_by_value = "allow"
+explicit_iter_loop = "allow"
+clone_on_copy = "allow"
+enum_glob_use = "allow"
+unreadable_literal = "allow"
+redundant_closure = "allow"
+redundant_locals = "allow"
+collapsible_match = "allow"
+let_unit_value = "allow"
+unit_arg = "allow"
+too_many_arguments = "allow"
+expl_impl_clone_on_copy = "allow"
+similar_names = "allow"
+or_fun_call = "allow"
+cloned_instead_of_copied = "allow"
+many_single_char_names = "allow"
+doc_link_code = "allow"
+equatable_if_let = "allow"
+format_collect = "allow"
+should_implement_trait = "allow"
+pub_underscore_fields = "allow"
+manual_is_variant_and = "allow"
+
+[workspace.dependencies]
+# Coordinators (git pins until published under unified-field-dev)
+boson-coordinator = { git = "https://github.com/unified-field-dev/boson-coordinator", branch = "main", default-features = false }
+chronon-coordinator = { git = "https://github.com/unified-field-dev/chronon-coordinator", branch = "main" }
+
+# Valence ORM (uf-dev git main)
+valence = { package = "uf-valence", git = "https://github.com/unified-field-dev/valence", branch = "main", default-features = false, features = ["mem", "sqlite"] }
+valence-codegen = { package = "uf-valence-codegen", git = "https://github.com/unified-field-dev/valence", branch = "main" }
+
+anyhow = "1"
+async-trait = "0.1"
+axum = { version = "0.8.4", default-features = false, features = ["http1", "json", "query"] }
+boson-core = { git = "https://github.com/unified-field-dev/boson", branch = "main" }
+boson-macros = { git = "https://github.com/unified-field-dev/boson", branch = "main" }
+boson-runtime = { git = "https://github.com/unified-field-dev/boson", branch = "main", default-features = false }
+boson-valence-identity = { git = "https://github.com/unified-field-dev/boson-valence-identity", branch = "main" }
+chrono = { version = "0.4", default-features = false, features = ["clock", "std", "serde"] }
+chronon-core = { git = "https://github.com/unified-field-dev/chronon", branch = "main" }
+chronon-executor = { git = "https://github.com/unified-field-dev/chronon", branch = "main" }
+chronon-coordinator-macros = { git = "https://github.com/unified-field-dev/chronon-coordinator-macros", branch = "main" }
+chronon-valence-identity = { git = "https://github.com/unified-field-dev/chronon-valence-identity", branch = "main" }
+inventory = "0.3"
+log = "0.4.27"
+quark = { package = "uf-quark", git = "https://github.com/unified-field-dev/quark", branch = "main" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.45.0", features = ["rt-multi-thread", "macros"] }
+uuid = { version = "1", features = ["v4"] }
+
+# Transitive crates.io UF crates → same uf-dev git main (type unification).
+[patch.crates-io]
+uf-valence = { git = "https://github.com/unified-field-dev/valence", branch = "main" }
+uf-valence-core = { git = "https://github.com/unified-field-dev/valence", branch = "main" }
+uf-valence-codegen = { git = "https://github.com/unified-field-dev/valence", branch = "main" }
+uf-valence-macros = { git = "https://github.com/unified-field-dev/valence", branch = "main" }
+uf-valence-telemetry = { git = "https://github.com/unified-field-dev/valence", branch = "main" }
+uf-valence-backend-mem = { git = "https://github.com/unified-field-dev/valence", branch = "main" }
+uf-valence-backend-sqlite = { git = "https://github.com/unified-field-dev/valence", branch = "main" }
+uf-valence-backend-sql = { git = "https://github.com/unified-field-dev/valence", branch = "main" }
+uf-quark = { git = "https://github.com/unified-field-dev/quark", branch = "main" }
+boson-core = { git = "https://github.com/unified-field-dev/boson", branch = "main" }
+boson-macros = { git = "https://github.com/unified-field-dev/boson", branch = "main" }
+boson-runtime = { git = "https://github.com/unified-field-dev/boson", branch = "main" }
+boson-telemetry = { git = "https://github.com/unified-field-dev/boson", branch = "main" }
+chronon-core = { git = "https://github.com/unified-field-dev/chronon", branch = "main" }
+chronon-executor = { git = "https://github.com/unified-field-dev/chronon", branch = "main" }
+chronon-scheduler = { git = "https://github.com/unified-field-dev/chronon", branch = "main" }
+chronon-telemetry = { git = "https://github.com/unified-field-dev/chronon", branch = "main" }
