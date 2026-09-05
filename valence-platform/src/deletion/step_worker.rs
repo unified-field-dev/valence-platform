@@ -178,15 +178,6 @@ pub async fn run_valence_deletion_step_worker(
         return Ok(());
     }
 
-    if matches!(node.action, DeletionAction::CascadeDelete) {
-        if let Err(e) =
-            valence::ownership::OwnershipService::mark_deleted_ownership(tbl, rid, &requester).await
-        {
-            // Ownership rows are optional when unified ownership is disabled / unset.
-            log::debug!("mark_deleted_ownership skipped: {e}");
-        }
-    }
-
     ValenceDeletionStep::merge(
         &step_id,
         serde_json::json!({
