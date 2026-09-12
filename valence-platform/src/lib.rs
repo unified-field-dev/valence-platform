@@ -104,37 +104,12 @@ pub const DEFAULT_PLATFORM_STORAGE: valence::DatabaseFromEngine =
 pub const DEFAULT_PLATFORM_STORAGE: valence::DatabaseFromEngine =
     valence::Database::from_engine("default", valence::SQLITE_ENGINE_ID);
 
-mod valence_iter_run_schema {
-    include!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/schemas/valence_iter_run_schema.rs"
-    ));
-}
-mod valence_iter_batch_schema {
-    include!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/schemas/valence_iter_batch_schema.rs"
-    ));
-}
-mod valence_iter_row_error_schema {
-    include!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/schemas/valence_iter_row_error_schema.rs"
-    ));
-}
-mod valence_deletion_step_schema {
-    include!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/schemas/valence_deletion_step_schema.rs"
-    ));
-}
-mod valence_deletion_error_schema {
-    include!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/schemas/valence_deletion_error_schema.rs"
-    ));
-}
-
+/// Runtime schema registration for platform system tables.
+///
+/// Model schemas are registered by codegen (`OUT_DIR/generated_models.rs`). Including
+/// `*_schema.rs` here would submit a second [`valence::SchemaMetadataInit`] and panic in
+/// [`valence::SchemaRegistry`] (local Valence no longer silently prefers the richer of two
+/// submissions).
 mod generated {
     #![allow(
         dead_code,

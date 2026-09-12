@@ -66,6 +66,7 @@ fn schema_meta(name: &'static str, connections: Vec<SchemaConnection>) -> &'stat
             row_count: 0,
             owner: "t".into(),
             description: None,
+            repository: "https://github.com/unified-field-dev/valence-platform".to_string(),
         },
     });
     Box::leak(Box::new(SchemaMetadata::from_schema(schema)))

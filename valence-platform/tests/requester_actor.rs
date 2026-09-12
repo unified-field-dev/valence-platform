@@ -118,6 +118,7 @@ async fn tm_a2_restored_user_sees_system_only_delete_deny() {
             row_count: 0,
             owner: "system".into(),
             description: None,
+            repository: "https://github.com/unified-field-dev/valence-platform".to_string(),
         },
     }));
     let meta = Box::leak(Box::new(SchemaMetadata::from_schema(schema)));

@@ -6,6 +6,7 @@ use ::valence::privacy_policies::common::SYSTEM_ONLY;
 
 valence_schema! {
     ValenceIterRowError {
+        repository: "https://github.com/unified-field-dev/valence-platform",
         table: "valence_iter_row_error",
         version: "0.1.0",
         database: crate::DEFAULT_PLATFORM_STORAGE,

@@ -6,6 +6,7 @@ use ::valence::privacy_policies::common::SYSTEM_ONLY;
 
 valence_schema! {
     ValenceDeletionStep {
+        repository: "https://github.com/unified-field-dev/valence-platform",
         table: "valence_deletion_step",
         version: "0.1.0",
         database: crate::DEFAULT_PLATFORM_STORAGE,
