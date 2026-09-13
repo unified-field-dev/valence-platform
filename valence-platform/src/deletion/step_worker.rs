@@ -82,30 +82,32 @@ pub async fn run_valence_deletion_step_worker(
         None => return Ok(()),
     };
     if run_j.get("status").and_then(|s| s.as_str()) == Some("cancelled") {
-        let _ = ValenceDeletionStep::merge(
+        let _ = ValenceDeletionStep::merge_used(
             &step_id,
             serde_json::json!({
                 "status": "skipped",
                 "completed_at": Utc::now().timestamp(),
             }),
             &sys,
+            valence::use_!("merge ValenceDeletionStep in src/deletion/step_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."),
         )
         .await;
         return Ok(());
     }
 
-    let step = match ValenceDeletionStep::get(&step_id, &sys).await? {
+    let step = match ValenceDeletionStep::get_used(&step_id, &sys, valence::use_!("get ValenceDeletionStep in src/deletion/step_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await? {
         Some(s) => s,
         None => return Ok(()),
     };
 
-    ValenceDeletionStep::merge(
+    ValenceDeletionStep::merge_used(
         &step_id,
         serde_json::json!({
             "status": "in_progress",
             "started_at": Utc::now().timestamp(),
         }),
         &sys,
+        valence::use_!("merge ValenceDeletionStep in src/deletion/step_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."),
     )
     .await
     .map_err(|e| anyhow!("{}", e))?;
@@ -125,10 +127,10 @@ pub async fn run_valence_deletion_step_worker(
                 Utc::now(),
             )
             .map_err(|e2| anyhow!("{}", e2))?;
-            ValenceDeletionError::create(err, &sys)
+            ValenceDeletionError::create_used(err, &sys, valence::use_!("create ValenceDeletionError in src/deletion/step_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
                 .await
                 .map_err(|e2| anyhow!("{}", e2))?;
-            ValenceDeletionStep::merge(
+            ValenceDeletionStep::merge_used(
                 &step_id,
                 serde_json::json!({
                     "status": "failed",
@@ -136,6 +138,7 @@ pub async fn run_valence_deletion_step_worker(
                     "completed_at": Utc::now().timestamp(),
                 }),
                 &sys,
+                valence::use_!("merge ValenceDeletionStep in src/deletion/step_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."),
             )
             .await
             .map_err(|e2| anyhow!("{}", e2))?;
@@ -160,10 +163,10 @@ pub async fn run_valence_deletion_step_worker(
             Utc::now(),
         )
         .map_err(|e2| anyhow!("{}", e2))?;
-        ValenceDeletionError::create(err, &sys)
+        ValenceDeletionError::create_used(err, &sys, valence::use_!("create ValenceDeletionError in src/deletion/step_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
             .await
             .map_err(|e2| anyhow!("{}", e2))?;
-        ValenceDeletionStep::merge(
+        ValenceDeletionStep::merge_used(
             &step_id,
             serde_json::json!({
                 "status": "failed",
@@ -171,6 +174,7 @@ pub async fn run_valence_deletion_step_worker(
                 "completed_at": Utc::now().timestamp(),
             }),
             &sys,
+            valence::use_!("merge ValenceDeletionStep in src/deletion/step_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."),
         )
         .await
         .map_err(|e2| anyhow!("{}", e2))?;
@@ -178,13 +182,14 @@ pub async fn run_valence_deletion_step_worker(
         return Ok(());
     }
 
-    ValenceDeletionStep::merge(
+    ValenceDeletionStep::merge_used(
         &step_id,
         serde_json::json!({
             "status": "completed",
             "completed_at": Utc::now().timestamp(),
         }),
         &sys,
+        valence::use_!("merge ValenceDeletionStep in src/deletion/step_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."),
     )
     .await
     .map_err(|e| anyhow!("{}", e))?;

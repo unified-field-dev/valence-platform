@@ -70,7 +70,7 @@ async fn bump_run_field(
     delta: i64,
     valence: &Valence,
 ) -> anyhow::Result<()> {
-    let run = ValenceIterRun::get(run_id, valence)
+    let run = ValenceIterRun::get_used(run_id, valence, valence::use_!("get ValenceIterRun in src/iter/row_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .map_err(|e| anyhow!("{}", e))?
         .context("iter run missing")?;
@@ -81,7 +81,7 @@ async fn bump_run_field(
         _ => return Err(anyhow!("unknown run counter field {}", field)),
     };
     let patch = serde_json::json!({ field: cur + delta });
-    ValenceIterRun::merge(run_id, patch, valence)
+    ValenceIterRun::merge_used(run_id, patch, valence, valence::use_!("merge ValenceIterRun in src/iter/row_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .map_err(|e| anyhow!("{}", e))?;
     Ok(())
@@ -93,7 +93,7 @@ async fn bump_batch_field(
     delta: i64,
     valence: &Valence,
 ) -> anyhow::Result<()> {
-    let batch = ValenceIterBatch::get(batch_id, valence)
+    let batch = ValenceIterBatch::get_used(batch_id, valence, valence::use_!("get ValenceIterBatch in src/iter/row_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .map_err(|e| anyhow!("{}", e))?
         .context("iter batch missing")?;
@@ -104,26 +104,27 @@ async fn bump_batch_field(
         _ => return Err(anyhow!("unknown batch counter field {}", field)),
     };
     let patch = serde_json::json!({ field: cur + delta });
-    ValenceIterBatch::merge(batch_id, patch, valence)
+    ValenceIterBatch::merge_used(batch_id, patch, valence, valence::use_!("merge ValenceIterBatch in src/iter/row_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .map_err(|e| anyhow!("{}", e))?;
     Ok(())
 }
 
 async fn maybe_complete_batch(batch_id: &str, valence: &Valence) -> anyhow::Result<()> {
-    let batch = ValenceIterBatch::get(batch_id, valence)
+    let batch = ValenceIterBatch::get_used(batch_id, valence, valence::use_!("get ValenceIterBatch in src/iter/row_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .map_err(|e| anyhow!("{}", e))?
         .context("batch missing")?;
     let done = *batch.processed() + *batch.skipped() + *batch.failed();
     if done >= *batch.row_count() {
-        ValenceIterBatch::merge(
+        ValenceIterBatch::merge_used(
             batch_id,
             serde_json::json!({
                 "status": "completed",
                 "completed_at": Utc::now().timestamp(),
             }),
             valence,
+            valence::use_!("merge ValenceIterBatch in src/iter/row_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."),
         )
         .await
         .map_err(|e| anyhow!("{}", e))?;
@@ -141,7 +142,7 @@ pub async fn run_valence_iter_row_worker(
     iter_name: String,
     table_name: String,
 ) -> anyhow::Result<()> {
-    let run = match ValenceIterRun::get(&run_id, &valence)
+    let run = match ValenceIterRun::get_used(&run_id, &valence, valence::use_!("get ValenceIterRun in src/iter/row_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .await
         .map_err(|e| anyhow!("{}", e))?
     {
@@ -176,7 +177,7 @@ pub async fn run_valence_iter_row_worker(
                 Utc::now(),
             )
             .map_err(|e2| anyhow!("{}", e2))?;
-            ValenceIterRowError::create(err, &valence)
+            ValenceIterRowError::create_used(err, &valence, valence::use_!("create ValenceIterRowError in src/iter/row_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
                 .await
                 .map_err(|e2| anyhow!("{}", e2))?;
             bump_run_field(&run_id, "failed_rows", 1, &valence).await?;
@@ -198,7 +199,7 @@ pub async fn run_valence_iter_row_worker(
                 Utc::now(),
             )
             .map_err(|e2| anyhow!("{}", e2))?;
-            ValenceIterRowError::create(err, &valence)
+            ValenceIterRowError::create_used(err, &valence, valence::use_!("create ValenceIterRowError in src/iter/row_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
                 .await
                 .map_err(|e2| anyhow!("{}", e2))?;
             bump_run_field(&run_id, "failed_rows", 1, &valence).await?;
@@ -225,7 +226,7 @@ pub async fn run_valence_iter_row_worker(
             Utc::now(),
         )
         .map_err(|e2| anyhow!("{}", e2))?;
-        ValenceIterRowError::create(err, &valence)
+        ValenceIterRowError::create_used(err, &valence, valence::use_!("create ValenceIterRowError in src/iter/row_worker.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
             .await
             .map_err(|e2| anyhow!("{}", e2))?;
         bump_run_field(&run_id, "failed_rows", 1, &valence).await?;

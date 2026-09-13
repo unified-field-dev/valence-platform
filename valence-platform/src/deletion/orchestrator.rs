@@ -276,7 +276,7 @@ async fn run_valence_deletion_orchestrator_impl(
                     None,
                 )
                 .map_err(|e| anyhow!("{}", e))?;
-                ValenceDeletionStep::upsert(&step_id, row, &sys)
+                ValenceDeletionStep::upsert_used(&step_id, row, &sys, valence::use_!("upsert ValenceDeletionStep in src/deletion/orchestrator.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
                     .await
                     .map_err(|e| anyhow!("{}", e))?;
 

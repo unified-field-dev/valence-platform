@@ -96,7 +96,7 @@ impl IterService {
             initiated_by,
             opts.target_row_id,
         )?;
-        ValenceIterRun::upsert(&run_id, run, v).await?;
+        ValenceIterRun::upsert_used(&run_id, run, v, valence::use_!("upsert ValenceIterRun in src/iter/run_service.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
         Ok(run_id)
     }
 
@@ -179,7 +179,7 @@ impl IterService {
     ) -> Result<ValenceIterRun> {
         let run_id = Self::create_run(v, iter_name, target_table, opts).await?;
         Self::start_for_tests(v, &run_id).await?;
-        ValenceIterRun::get(&run_id, v)
+        ValenceIterRun::get_used(&run_id, v, valence::use_!("get ValenceIterRun in src/iter/run_service.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
             .await?
             .ok_or_else(|| Error::NotFound(format!("iter run {run_id} disappeared")))
     }

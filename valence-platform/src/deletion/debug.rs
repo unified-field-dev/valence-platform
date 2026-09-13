@@ -495,7 +495,7 @@ async fn list_steps_for_run(v: &Valence, run_id: &str) -> Result<Value, String> 
     let sys = v.with_actor(Actor::System {
         operation: "valence_deletion_debug".to_string(),
     });
-    let rows = ValenceDeletionStep::query(&sys)
+    let rows = ValenceDeletionStep::query_used(&sys, valence::use_!("query ValenceDeletionStep in src/deletion/debug.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .where_run_id(StringPredicate::Equals(run_id.to_string()))
         .await
         .map_err(|e| e.to_string())?;
@@ -510,7 +510,7 @@ async fn list_errors_for_run(v: &Valence, run_id: &str) -> Result<Value, String>
     let sys = v.with_actor(Actor::System {
         operation: "valence_deletion_debug".to_string(),
     });
-    let rows = ValenceDeletionError::query(&sys)
+    let rows = ValenceDeletionError::query_used(&sys, valence::use_!("query ValenceDeletionError in src/deletion/debug.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
         .where_run_id(StringPredicate::Equals(run_id.to_string()))
         .await
         .map_err(|e| e.to_string())?;
