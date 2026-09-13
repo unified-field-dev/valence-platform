@@ -96,7 +96,7 @@ impl IterService {
             initiated_by,
             opts.target_row_id,
         )?;
-        ValenceIterRun::upsert_used(&run_id, run, v, valence::use_!("upsert ValenceIterRun in src/iter/run_service.rs; Valence persistence for this feature path; typed store; visible to session actor / service path.")).await?;
+        ValenceIterRun::upsert_used(&run_id, run, v, valence::use_!(r#"When **Valence platform iter and deletion** needs to persist work, we **save Valence Iter Run** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."#)).await?;
         Ok(run_id)
     }
 
@@ -179,7 +179,7 @@ impl IterService {
     ) -> Result<ValenceIterRun> {
         let run_id = Self::create_run(v, iter_name, target_table, opts).await?;
         Self::start_for_tests(v, &run_id).await?;
-        ValenceIterRun::get_used(&run_id, v, valence::use_!("get ValenceIterRun in src/iter/run_service.rs; Valence persistence for this feature path; typed store; visible to session actor / service path."))
+        ValenceIterRun::get_used(&run_id, v, valence::use_!(r#"In **Valence platform iter and deletion**, we **load Valence Iter Run** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."#))
             .await?
             .ok_or_else(|| Error::NotFound(format!("iter run {run_id} disappeared")))
     }
