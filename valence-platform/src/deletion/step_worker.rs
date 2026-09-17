@@ -89,13 +89,13 @@ pub async fn run_valence_deletion_step_worker(
                 "completed_at": Utc::now().timestamp(),
             }),
             &sys,
-            valence::use_!(r#"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."#),
+            valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
         )
         .await;
         return Ok(());
     }
 
-    let step = match ValenceDeletionStep::get_used(&step_id, &sys, valence::use_!(r#"In **Valence platform iter and deletion**, we **load Valence Deletion Step** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."#)).await? {
+    let step = match ValenceDeletionStep::get_used(&step_id, &sys, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Deletion Step** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it.")).await? {
         Some(s) => s,
         None => return Ok(()),
     };
@@ -107,7 +107,7 @@ pub async fn run_valence_deletion_step_worker(
             "started_at": Utc::now().timestamp(),
         }),
         &sys,
-        valence::use_!(r#"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."#),
+        valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
     )
     .await
     .map_err(|e| anyhow!("{}", e))?;
@@ -127,7 +127,7 @@ pub async fn run_valence_deletion_step_worker(
                 Utc::now(),
             )
             .map_err(|e2| anyhow!("{}", e2))?;
-            ValenceDeletionError::create_used(err, &sys, valence::use_!(r#"When **Valence platform iter and deletion** needs to persist work, we **save Valence Deletion Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."#))
+            ValenceDeletionError::create_used(err, &sys, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Deletion Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
                 .await
                 .map_err(|e2| anyhow!("{}", e2))?;
             ValenceDeletionStep::merge_used(
@@ -138,7 +138,7 @@ pub async fn run_valence_deletion_step_worker(
                     "completed_at": Utc::now().timestamp(),
                 }),
                 &sys,
-                valence::use_!(r#"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."#),
+                valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
             )
             .await
             .map_err(|e2| anyhow!("{}", e2))?;
@@ -163,7 +163,7 @@ pub async fn run_valence_deletion_step_worker(
             Utc::now(),
         )
         .map_err(|e2| anyhow!("{}", e2))?;
-        ValenceDeletionError::create_used(err, &sys, valence::use_!(r#"When **Valence platform iter and deletion** needs to persist work, we **save Valence Deletion Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."#))
+        ValenceDeletionError::create_used(err, &sys, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Deletion Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
             .await
             .map_err(|e2| anyhow!("{}", e2))?;
         ValenceDeletionStep::merge_used(
@@ -174,7 +174,7 @@ pub async fn run_valence_deletion_step_worker(
                 "completed_at": Utc::now().timestamp(),
             }),
             &sys,
-            valence::use_!(r#"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."#),
+            valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
         )
         .await
         .map_err(|e2| anyhow!("{}", e2))?;
@@ -189,7 +189,7 @@ pub async fn run_valence_deletion_step_worker(
             "completed_at": Utc::now().timestamp(),
         }),
         &sys,
-        valence::use_!(r#"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."#),
+        valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
     )
     .await
     .map_err(|e| anyhow!("{}", e))?;

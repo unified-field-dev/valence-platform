@@ -276,7 +276,7 @@ async fn run_valence_deletion_orchestrator_impl(
                     None,
                 )
                 .map_err(|e| anyhow!("{}", e))?;
-                ValenceDeletionStep::upsert_used(&step_id, row, &sys, valence::use_!(r#"When **Valence platform iter and deletion** needs to persist work, we **save Valence Deletion Step** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."#))
+                ValenceDeletionStep::upsert_used(&step_id, row, &sys, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Deletion Step** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
                     .await
                     .map_err(|e| anyhow!("{}", e))?;
 

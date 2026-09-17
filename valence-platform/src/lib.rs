@@ -115,6 +115,7 @@ mod generated {
         dead_code,
         unused_imports,
         missing_docs,
+        deprecated,
         clippy::all,
         clippy::pedantic,
         clippy::nursery,
