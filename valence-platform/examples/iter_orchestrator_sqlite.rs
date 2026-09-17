@@ -80,6 +80,7 @@ pub struct MarkProcessedIter;
 
 valence_schema! {
     DemoNote {
+        repository: "https://github.com/unified-field-dev/valence-platform",
         table: "demo_note",
         version: "0.1.0",
         description: "Teaching table for valence-platform iter examples",

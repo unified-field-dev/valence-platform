@@ -135,7 +135,7 @@ impl DeletionService {
             )
             .order_by("requested_at".to_string(), SortDirection::Desc)
             .limit(50)
-            .execute(&sys)
+            .execute_used(&sys, valence::use_!(r"In **Valence platform iter and deletion**, we **list deletion runs for one record** so an operator checking a specific entity's deletion history can see every run tied to it, most recent first. This backs admin tooling; it does not appear on any end-user page."))
             .await
             .map_err(|e| Error::database(e.to_string()))
     }
@@ -150,7 +150,7 @@ impl DeletionService {
             )
             .order_by("requested_at".to_string(), SortDirection::Desc)
             .limit(50)
-            .execute(&sys)
+            .execute_used(&sys, valence::use_!(r"In **Valence platform iter and deletion**, we **list recent deletion runs for a schema** so an operator can review how that schema's deletion runs have been progressing. This backs admin tooling; it does not appear on any end-user page."))
             .await
             .map_err(|e| Error::database(e.to_string()))
     }
@@ -188,7 +188,7 @@ impl DeletionService {
         QueryCore::new("valence_deletion_run".to_string())
             .order_by("requested_at".to_string(), SortDirection::Desc)
             .limit(limit)
-            .execute(&sys)
+            .execute_used(&sys, valence::use_!(r"In **Valence platform iter and deletion**, we **list the most recent deletion runs** so the admin console can show operators what has run and each run's status. Only operators with console access see this list."))
             .await
             .map_err(|e| Error::database(e.to_string()))
     }
@@ -212,7 +212,7 @@ impl DeletionService {
             )
             .order_by("requested_at".to_string(), SortDirection::Asc)
             .limit(limit)
-            .execute(&sys)
+            .execute_used(&sys, valence::use_!(r"In **Valence platform iter and deletion**, we **find queued runs older than a cutoff** so the reconciler can restart any run whose Chronon run_now never actually started the orchestrator. This is an internal system check, not shown to operators or end users."))
             .await
             .map_err(|e| Error::database(e.to_string()))
     }

@@ -149,7 +149,7 @@ async fn list_expired_ids(table: &str, limit: u32, v: &Valence) -> valence::Resu
         .where_string(EXPIRE_AT_FIELD.to_string(), StringPredicate::LessThan(now))
         .order_by(EXPIRE_AT_FIELD.to_string(), SortDirection::Asc)
         .limit(limit)
-        .execute(v)
+        .execute_used(v, valence::use_!(r"In **Valence platform TTL sweep**, we **find rows past their expiry cutoff** on a table so the background sweep can queue them for removal. This is an internal system job with no operator or end-user view."))
         .await
         .map_err(|e| valence::Error::database(e.to_string()))?;
 

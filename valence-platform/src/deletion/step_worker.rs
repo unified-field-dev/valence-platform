@@ -82,30 +82,32 @@ pub async fn run_valence_deletion_step_worker(
         None => return Ok(()),
     };
     if run_j.get("status").and_then(|s| s.as_str()) == Some("cancelled") {
-        let _ = ValenceDeletionStep::merge(
+        let _ = ValenceDeletionStep::merge_used(
             &step_id,
             serde_json::json!({
                 "status": "skipped",
                 "completed_at": Utc::now().timestamp(),
             }),
             &sys,
+            valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
         )
         .await;
         return Ok(());
     }
 
-    let step = match ValenceDeletionStep::get(&step_id, &sys).await? {
+    let step = match ValenceDeletionStep::get_used(&step_id, &sys, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Deletion Step** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it.")).await? {
         Some(s) => s,
         None => return Ok(()),
     };
 
-    ValenceDeletionStep::merge(
+    ValenceDeletionStep::merge_used(
         &step_id,
         serde_json::json!({
             "status": "in_progress",
             "started_at": Utc::now().timestamp(),
         }),
         &sys,
+        valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
     )
     .await
     .map_err(|e| anyhow!("{}", e))?;
@@ -125,10 +127,10 @@ pub async fn run_valence_deletion_step_worker(
                 Utc::now(),
             )
             .map_err(|e2| anyhow!("{}", e2))?;
-            ValenceDeletionError::create(err, &sys)
+            ValenceDeletionError::create_used(err, &sys, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Deletion Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
                 .await
                 .map_err(|e2| anyhow!("{}", e2))?;
-            ValenceDeletionStep::merge(
+            ValenceDeletionStep::merge_used(
                 &step_id,
                 serde_json::json!({
                     "status": "failed",
@@ -136,6 +138,7 @@ pub async fn run_valence_deletion_step_worker(
                     "completed_at": Utc::now().timestamp(),
                 }),
                 &sys,
+                valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
             )
             .await
             .map_err(|e2| anyhow!("{}", e2))?;
@@ -160,10 +163,10 @@ pub async fn run_valence_deletion_step_worker(
             Utc::now(),
         )
         .map_err(|e2| anyhow!("{}", e2))?;
-        ValenceDeletionError::create(err, &sys)
+        ValenceDeletionError::create_used(err, &sys, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Deletion Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
             .await
             .map_err(|e2| anyhow!("{}", e2))?;
-        ValenceDeletionStep::merge(
+        ValenceDeletionStep::merge_used(
             &step_id,
             serde_json::json!({
                 "status": "failed",
@@ -171,6 +174,7 @@ pub async fn run_valence_deletion_step_worker(
                 "completed_at": Utc::now().timestamp(),
             }),
             &sys,
+            valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
         )
         .await
         .map_err(|e2| anyhow!("{}", e2))?;
@@ -178,22 +182,14 @@ pub async fn run_valence_deletion_step_worker(
         return Ok(());
     }
 
-    if matches!(node.action, DeletionAction::CascadeDelete) {
-        if let Err(e) =
-            valence::ownership::OwnershipService::mark_deleted_ownership(tbl, rid, &requester).await
-        {
-            // Ownership rows are optional when unified ownership is disabled / unset.
-            log::debug!("mark_deleted_ownership skipped: {e}");
-        }
-    }
-
-    ValenceDeletionStep::merge(
+    ValenceDeletionStep::merge_used(
         &step_id,
         serde_json::json!({
             "status": "completed",
             "completed_at": Utc::now().timestamp(),
         }),
         &sys,
+        valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Deletion Step** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
     )
     .await
     .map_err(|e| anyhow!("{}", e))?;

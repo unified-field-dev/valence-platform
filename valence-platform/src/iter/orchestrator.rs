@@ -86,7 +86,7 @@ async fn run_valence_iter_orchestrator_impl(
     run_id: String,
     row_dispatch: ValenceIterOrchestratorRowDispatch,
 ) -> anyhow::Result<()> {
-    let run = ValenceIterRun::get(&run_id, &valence)
+    let run = ValenceIterRun::get_used(&run_id, &valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Run** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
         .await
         .map_err(|e| anyhow!("{}", e))?
         .context("iter run not found")?;
@@ -98,22 +98,24 @@ async fn run_valence_iter_orchestrator_impl(
     let target_table = run.target_table().clone();
     let iter_name = run.iter_name().clone();
 
-    ValenceIterRun::merge(
+    ValenceIterRun::merge_used(
         &run_id,
         serde_json::json!({
             "status": "scanning",
             "started_at": Utc::now().timestamp(),
         }),
         &valence,
+        valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Iter Run** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
     )
     .await
     .map_err(|e| anyhow!("{}", e))?;
 
     let total = paging::count_table_rows(&valence, &target_table).await?;
-    ValenceIterRun::merge(
+    ValenceIterRun::merge_used(
         &run_id,
         serde_json::json!({ "total_rows": total }),
         &valence,
+        valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Iter Run** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
     )
     .await
     .map_err(|e| anyhow!("{}", e))?;
@@ -122,7 +124,7 @@ async fn run_valence_iter_orchestrator_impl(
     let mut batch_index: i64 = 0;
 
     loop {
-        let run_row = ValenceIterRun::get(&run_id, &valence)
+        let run_row = ValenceIterRun::get_used(&run_id, &valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Run** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
             .await
             .map_err(|e| anyhow!("{}", e))?
             .context("iter run disappeared")?;
@@ -160,7 +162,7 @@ async fn run_valence_iter_orchestrator_impl(
             None,
         )
         .map_err(|e| anyhow!("{}", e))?;
-        ValenceIterBatch::upsert(&batch_id, batch, &valence)
+        ValenceIterBatch::upsert_used(&batch_id, batch, &valence, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Iter Batch** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
             .await
             .map_err(|e| anyhow!("{}", e))?;
 
@@ -184,32 +186,35 @@ async fn run_valence_iter_orchestrator_impl(
                 }
             }
             enqueued += 1;
-            ValenceIterBatch::merge(
+            ValenceIterBatch::merge_used(
                 &batch_id,
                 serde_json::json!({ "enqueued_count": enqueued }),
                 &valence,
+                valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Iter Batch** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
             )
             .await
             .map_err(|e| anyhow!("{}", e))?;
         }
 
-        ValenceIterBatch::merge(
+        ValenceIterBatch::merge_used(
             &batch_id,
             serde_json::json!({ "status": "processing" }),
             &valence,
+            valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Iter Batch** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
         )
         .await
         .map_err(|e| anyhow!("{}", e))?;
 
-        let scanned_so_far = *ValenceIterRun::get(&run_id, &valence)
+        let scanned_so_far = *ValenceIterRun::get_used(&run_id, &valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Run** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
             .await
             .map_err(|e| anyhow!("{}", e))?
             .context("run missing")?
             .scanned_rows();
-        ValenceIterRun::merge(
+        ValenceIterRun::merge_used(
             &run_id,
             serde_json::json!({ "scanned_rows": scanned_so_far + row_count }),
             &valence,
+            valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Iter Run** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
         )
         .await
         .map_err(|e| anyhow!("{}", e))?;
@@ -218,16 +223,17 @@ async fn run_valence_iter_orchestrator_impl(
         batch_index += 1;
     }
 
-    ValenceIterRun::merge(
+    ValenceIterRun::merge_used(
         &run_id,
         serde_json::json!({ "status": "processing" }),
         &valence,
+        valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Iter Run** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
     )
     .await
     .map_err(|e| anyhow!("{}", e))?;
 
     loop {
-        let r = ValenceIterRun::get(&run_id, &valence)
+        let r = ValenceIterRun::get_used(&run_id, &valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Run** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
             .await
             .map_err(|e| anyhow!("{}", e))?
             .context("run missing")?;
@@ -243,13 +249,14 @@ async fn run_valence_iter_orchestrator_impl(
             } else {
                 "completed"
             };
-            ValenceIterRun::merge(
+            ValenceIterRun::merge_used(
                 &run_id,
                 serde_json::json!({
                     "status": terminal,
                     "completed_at": Utc::now().timestamp(),
                 }),
                 &valence,
+                valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Iter Run** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
             )
             .await
             .map_err(|e| anyhow!("{}", e))?;

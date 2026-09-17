@@ -43,7 +43,11 @@
 //!
 //! A cascade delete walks the schema DAG under the requester actor so child rows and Restrict
 //! rules stay privacy-correct. On a host, `Model::delete` creates the run; tests and embedded
-//! hosts drive the same steps inline when Chronon is absent.
+//! hosts drive the same steps inline when Chronon is absent. Physical node apply (including
+//! cache invalidation and ownership `deleted`) lives in Valence
+//! [`apply_deletion_node`](valence::deletion::apply_deletion_node); the platform worker only
+//! advances run/step bookkeeping. For bounded in-request hard deletes without Chronon, products
+//! use Valence [`Model::delete_now`](valence::Model::delete_now) instead of this queue.
 //!
 //! **Prerequisites:** deletion dispatch registered (host) **or** an inline harness for tests;
 //! schema `on_delete` / CascadeDelete connections; requester actor stored on the run.

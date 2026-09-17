@@ -485,7 +485,7 @@ async fn list_recent_deletion_errors(v: &Valence, cap: u32) -> Result<Value, Str
     let rows = QueryCore::new("valence_deletion_error".to_string())
         .order_by("created_at".to_string(), SortDirection::Desc)
         .limit(cap)
-        .execute(&sys)
+        .execute_used(&sys, valence::use_!(r"In **Valence platform iter and deletion**, we **list the most recent deletion errors** so operators debugging the deletion pipeline can see what recently failed and why. Only callers with access to this debug console see the results; it is not shown to end users."))
         .await
         .map_err(|e| e.to_string())?;
     Ok(Value::Array(rows))
@@ -495,7 +495,7 @@ async fn list_steps_for_run(v: &Valence, run_id: &str) -> Result<Value, String> 
     let sys = v.with_actor(Actor::System {
         operation: "valence_deletion_debug".to_string(),
     });
-    let rows = ValenceDeletionStep::query(&sys)
+    let rows = ValenceDeletionStep::query_used(&sys, valence::use_!(r"In **Valence platform iter and deletion**, we **list Valence Deletion Step** so the product can show or process the matching set for this workflow. Callers allowed for **Valence platform iter and deletion** use the list; it is not a public dump of every field to anonymous visitors."))
         .where_run_id(StringPredicate::Equals(run_id.to_string()))
         .await
         .map_err(|e| e.to_string())?;
@@ -510,7 +510,7 @@ async fn list_errors_for_run(v: &Valence, run_id: &str) -> Result<Value, String>
     let sys = v.with_actor(Actor::System {
         operation: "valence_deletion_debug".to_string(),
     });
-    let rows = ValenceDeletionError::query(&sys)
+    let rows = ValenceDeletionError::query_used(&sys, valence::use_!(r"In **Valence platform iter and deletion**, we **list Valence Deletion Error** so the product can show or process the matching set for this workflow. Callers allowed for **Valence platform iter and deletion** use the list; it is not a public dump of every field to anonymous visitors."))
         .where_run_id(StringPredicate::Equals(run_id.to_string()))
         .await
         .map_err(|e| e.to_string())?;
