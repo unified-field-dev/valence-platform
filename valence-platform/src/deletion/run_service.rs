@@ -101,9 +101,14 @@ impl DeletionService {
     /// Fetch a run's raw JSON by id, or `None` if it does not exist.
     pub async fn get_run_json(run_id: &str, v: &Valence) -> Result<Option<Value>> {
         let sys = system_valence(v);
-        QueryCore::get_record_json("valence_deletion_run", run_id, &sys)
-            .await
-            .map_err(|e| Error::database(e.to_string()))
+        QueryCore::get_record_json_used(
+            "valence_deletion_run",
+            run_id,
+            &sys,
+            valence::use_!(r"In **Valence platform iter and deletion**, we **load a deletion run's stored JSON** so callers can read that run's status and counters. Operators and services using this API see the result; it is not an end-user page."),
+        )
+        .await
+        .map_err(|e| Error::database(e.to_string()))
     }
 
     /// Merge `patch` into the run row.

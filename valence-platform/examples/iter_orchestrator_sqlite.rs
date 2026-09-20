@@ -148,13 +148,13 @@ pub async fn assert_demo_outcomes(v: &Valence, completed: &ValenceIterRun) -> an
     assert_eq!(*completed.skipped_rows(), 2);
     assert_eq!(*completed.failed_rows(), 0);
 
-    let even = QueryCore::get_record_json(DEMO_TABLE, "n2", v)
+    let even = QueryCore::get_record_json_used(DEMO_TABLE, "n2", v, valence::use_!(r#"**Test:** Demo row load for `iter_orchestrator_sqlite` so the example can assert iter markers on even and odd rows. CI and developers running the example only."#))
         .await?
         .ok_or_else(|| anyhow::anyhow!("even row n2 missing"))?;
     assert_eq!(even.get("marker").and_then(|m| m.as_str()), Some("done"));
 
     for odd in ["n1", "n3"] {
-        let row = QueryCore::get_record_json(DEMO_TABLE, odd, v)
+        let row = QueryCore::get_record_json_used(DEMO_TABLE, odd, v, valence::use_!(r#"**Test:** Demo row load for `iter_orchestrator_sqlite` so the example can assert iter markers on even and odd rows. CI and developers running the example only."#))
             .await?
             .ok_or_else(|| anyhow::anyhow!("odd row {odd} missing"))?;
         assert_eq!(

@@ -164,7 +164,14 @@ async fn fetch_ordered_ids(
         if bare_id.is_empty() {
             continue;
         }
-        match QueryCore::get_entity(table_name, &bare_id, valence).await {
+        match QueryCore::get_entity_used(
+            table_name,
+            &bare_id,
+            valence,
+            valence::use_!(r"In **Valence platform iter and deletion**, we **load each candidate row** while paging a table so the iterator keeps only ids the current actor is allowed to see. The platform uses that filter to build the next page of work; the rows are not shown on an end-user page."),
+        )
+        .await
+        {
             Ok(Some(_)) => out.push(bare_id),
             Ok(None) | Err(_) => {}
         }

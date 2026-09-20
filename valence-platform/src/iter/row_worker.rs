@@ -1,6 +1,6 @@
 //! Boson worker: executes **one row** of a [`crate::ValenceIterRun`].
 //!
-//! Resolves [`valence::find_iter_descriptor`], loads the row via privacy-aware [`valence::QueryCore::get_entity`],
+//! Resolves [`valence::find_iter_descriptor`], loads the row via privacy-aware [`valence::QueryCore::get_entity_used`],
 //! injects a synthetic `id` into the JSON payload when Surreal omitted it, then runs generated
 //! `should_run` / `execute` functions.
 //!
@@ -50,7 +50,14 @@ async fn load_row_json(
     table_name: &str,
     row_id: &str,
 ) -> anyhow::Result<serde_json::Value> {
-    match QueryCore::get_entity(table_name, row_id, valence).await {
+    match QueryCore::get_entity_used(
+        table_name,
+        row_id,
+        valence,
+        valence::use_!(r"In **Valence platform iter and deletion**, we **load one table row** so the iter row worker can run the registered should_run and execute handlers on that row's fields. The platform uses the payload for that worker only; it is not displayed to end users."),
+    )
+    .await
+    {
         Ok(Some(entity)) => {
             let mut map: BTreeMap<String, serde_json::Value> = entity.data.clone();
             map.insert(

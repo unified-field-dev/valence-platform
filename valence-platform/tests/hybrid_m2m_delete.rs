@@ -195,14 +195,14 @@ async fn k_hyb_1_delete_target_clears_incoming_edges_happy() {
         "incoming edges to deleted peer must be cleared"
     );
     assert!(
-        QueryCore::get_record_json(PARENT, "p1", &boot)
+        QueryCore::get_record_json_used(PARENT, "p1", &boot, valence::use_!(r#"**Test:** Fixture row load for `hybrid_m2m_delete` so the suite can assert whether cascade delete removed or kept the peer. CI and developers running the suite only."#))
             .await
             .unwrap()
             .is_some(),
         "parent peer must remain"
     );
     assert!(
-        QueryCore::get_record_json(PEER, "t1", &boot)
+        QueryCore::get_record_json_used(PEER, "t1", &boot, valence::use_!(r#"**Test:** Fixture row load for `hybrid_m2m_delete` so the suite can assert whether cascade delete removed or kept the peer. CI and developers running the suite only."#))
             .await
             .unwrap()
             .is_none(),

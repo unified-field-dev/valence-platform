@@ -183,10 +183,10 @@ async fn main() -> anyhow::Result<()> {
         .ok_or_else(|| anyhow::anyhow!("missing deletion run"))?;
     let status = run.get("status").and_then(|s| s.as_str()).unwrap_or("?");
     assert_eq!(status, "completed");
-    assert!(QueryCore::get_record_json(PARENT, "p1", &boot)
+    assert!(QueryCore::get_record_json_used(PARENT, "p1", &boot, valence::use_!(r#"**Test:** Demo row load for `deletion_cascade_sqlite` so the example can assert parent and child rows are gone after cascade. CI and developers running the example only."#))
         .await?
         .is_none());
-    assert!(QueryCore::get_record_json(CHILD, "c1", &boot)
+    assert!(QueryCore::get_record_json_used(CHILD, "c1", &boot, valence::use_!(r#"**Test:** Demo row load for `deletion_cascade_sqlite` so the example can assert parent and child rows are gone after cascade. CI and developers running the example only."#))
         .await?
         .is_none());
 
