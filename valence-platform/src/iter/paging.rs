@@ -164,7 +164,7 @@ async fn fetch_ordered_ids(
         if bare_id.is_empty() {
             continue;
         }
-        match QueryCore::get_entity_used(
+        match QueryCore::get_entity(
             table_name,
             &bare_id,
             valence,

@@ -168,7 +168,7 @@ async fn main() -> anyhow::Result<()> {
         report.queued_deletes >= 1,
         "expected queued delete, got {report:?}"
     );
-    assert!(QueryCore::get_record_json_used(TABLE, "e1", &v, valence::use_!(r#"**Test:** Demo row load for `ttl_sweep_sqlite` so the example can assert the expired row is gone after sweep. CI and developers running the example only."#)).await?.is_none());
+    assert!(QueryCore::get_record_json(TABLE, "e1", &v, valence::use_!(r#"**Test:** Demo row load for `ttl_sweep_sqlite` so the example can assert the expired row is gone after sweep. CI and developers running the example only."#)).await?.is_none());
 
     if let Some(run_id) = report.run_ids.first() {
         let run = DeletionService::get_run_json(run_id, &v)

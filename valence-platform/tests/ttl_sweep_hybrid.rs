@@ -148,7 +148,7 @@ async fn k_ttl_pg_hybrid_expired_row_deleted_after_inline_sweep() {
     let v = hybrid_system_valence().await;
     v.ensure_ttl_for_table(TABLE).await.expect("ensure");
     seed_expired(&v, "h1").await;
-    assert!(QueryCore::get_record_json_used(TABLE, "h1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_hybrid` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#))
+    assert!(QueryCore::get_record_json(TABLE, "h1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_hybrid` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#))
         .await
         .unwrap()
         .is_some());
@@ -161,7 +161,7 @@ async fn k_ttl_pg_hybrid_expired_row_deleted_after_inline_sweep() {
         "expected queued delete, got {report:?}"
     );
     assert!(
-        QueryCore::get_record_json_used(TABLE, "h1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_hybrid` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#))
+        QueryCore::get_record_json(TABLE, "h1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_hybrid` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#))
             .await
             .unwrap()
             .is_none(),

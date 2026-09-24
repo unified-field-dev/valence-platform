@@ -143,7 +143,7 @@ async fn tm1_sqlite_expired_row_deleted_after_inline_sweep() {
     v.ensure_ttl_for_table(TABLE).await.expect("ensure again");
 
     seed_expired(&v, "e1").await;
-    assert!(QueryCore::get_record_json_used(TABLE, "e1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_sqlite` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#))
+    assert!(QueryCore::get_record_json(TABLE, "e1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_sqlite` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#))
         .await
         .unwrap()
         .is_some());
@@ -157,7 +157,7 @@ async fn tm1_sqlite_expired_row_deleted_after_inline_sweep() {
     );
 
     assert!(
-        QueryCore::get_record_json_used(TABLE, "e1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_sqlite` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#))
+        QueryCore::get_record_json(TABLE, "e1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_sqlite` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#))
             .await
             .unwrap()
             .is_none(),
@@ -191,7 +191,7 @@ async fn tm2_sqlite_future_expire_untouched() {
         .await
         .expect("sweep");
     assert!(
-        QueryCore::get_record_json_used(TABLE, "future1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_sqlite` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#))
+        QueryCore::get_record_json(TABLE, "future1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_sqlite` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#))
             .await
             .unwrap()
             .is_some(),
@@ -215,7 +215,7 @@ async fn tm14_sqlite_budget_drains_across_ticks() {
 
     let mut remaining = 0u32;
     for i in 0..3 {
-        if QueryCore::get_record_json_used(TABLE, &format!("b{i}", valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_sqlite` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#)), &v)
+        if QueryCore::get_record_json(TABLE, &format!("b{i}", valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_sqlite` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#)), &v)
             .await
             .unwrap()
             .is_some()
@@ -232,7 +232,7 @@ async fn tm14_sqlite_budget_drains_across_ticks() {
 
     for i in 0..3 {
         assert!(
-            QueryCore::get_record_json_used(TABLE, &format!("b{i}", valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_sqlite` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#)), &v)
+            QueryCore::get_record_json(TABLE, &format!("b{i}", valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_sqlite` so the suite can assert whether the TTL sweep removed or kept the record. CI and developers running the suite only."#)), &v)
                 .await
                 .unwrap()
                 .is_none(),

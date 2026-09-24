@@ -140,7 +140,7 @@ async fn tm6_mem_expired_row_deleted_after_inline_sweep() {
     );
 
     assert!(
-        QueryCore::get_record_json_used(TABLE, "m1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_mem` so the suite can assert whether the TTL sweep removed the record. CI and developers running the suite only."#))
+        QueryCore::get_record_json(TABLE, "m1", &v, valence::use_!(r#"**Test:** Fixture row load for `ttl_sweep_mem` so the suite can assert whether the TTL sweep removed the record. CI and developers running the suite only."#))
             .await
             .unwrap()
             .is_none(),

@@ -17,8 +17,8 @@
 #![allow(missing_docs)]
 
 use crate::{
-    ValenceIterBatch, ValenceIterRowError, ValenceIterRowErrorErrorKind, ValenceIterRun,
-    ValenceIterRunStatus,
+    ValenceIterBatch, ValenceIterBatchStatus, ValenceIterRowError, ValenceIterRowErrorErrorKind,
+    ValenceIterRun, ValenceIterRunStatus,
 };
 use anyhow::{anyhow, Context};
 use chrono::Utc;
@@ -50,7 +50,7 @@ async fn load_row_json(
     table_name: &str,
     row_id: &str,
 ) -> anyhow::Result<serde_json::Value> {
-    match QueryCore::get_entity_used(
+    match QueryCore::get_entity(
         table_name,
         row_id,
         valence,
@@ -77,18 +77,23 @@ async fn bump_run_field(
     delta: i64,
     valence: &Valence,
 ) -> anyhow::Result<()> {
-    let run = ValenceIterRun::get_used(run_id, valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Run** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
+    let run = ValenceIterRun::get(run_id, valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Run** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
         .await
         .map_err(|e| anyhow!("{}", e))?
         .context("iter run missing")?;
-    let cur = match field {
-        "processed_rows" => *run.processed_rows(),
-        "skipped_rows" => *run.skipped_rows(),
-        "failed_rows" => *run.failed_rows(),
+    let builder = run.get_mutable(
+        valence,
+        valence::use_!(r"In **Valence platform iter and deletion**, we **load the iter run as a mutable builder** so its row counter can be bumped. The same actors who can run **Valence platform iter and deletion** use the updated values."),
+    );
+    let builder = match field {
+        "processed_rows" => builder.set_processed_rows(*run.processed_rows() + delta),
+        "skipped_rows" => builder.set_skipped_rows(*run.skipped_rows() + delta),
+        "failed_rows" => builder.set_failed_rows(*run.failed_rows() + delta),
         _ => return Err(anyhow!("unknown run counter field {}", field)),
-    };
-    let patch = serde_json::json!({ field: cur + delta });
-    ValenceIterRun::merge_used(run_id, patch, valence, valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Iter Run** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."))
+    }
+    .map_err(|e| anyhow!("{}", e))?;
+    builder
+        .commit()
         .await
         .map_err(|e| anyhow!("{}", e))?;
     Ok(())
@@ -100,41 +105,46 @@ async fn bump_batch_field(
     delta: i64,
     valence: &Valence,
 ) -> anyhow::Result<()> {
-    let batch = ValenceIterBatch::get_used(batch_id, valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Batch** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
+    let batch = ValenceIterBatch::get(batch_id, valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Batch** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
         .await
         .map_err(|e| anyhow!("{}", e))?
         .context("iter batch missing")?;
-    let cur = match field {
-        "processed" => *batch.processed(),
-        "skipped" => *batch.skipped(),
-        "failed" => *batch.failed(),
+    let builder = batch.get_mutable(
+        valence,
+        valence::use_!(r"In **Valence platform iter and deletion**, we **load the iter batch as a mutable builder** so its row counter can be bumped. The same actors who can run **Valence platform iter and deletion** use the updated values."),
+    );
+    let builder = match field {
+        "processed" => builder.set_processed(*batch.processed() + delta),
+        "skipped" => builder.set_skipped(*batch.skipped() + delta),
+        "failed" => builder.set_failed(*batch.failed() + delta),
         _ => return Err(anyhow!("unknown batch counter field {}", field)),
-    };
-    let patch = serde_json::json!({ field: cur + delta });
-    ValenceIterBatch::merge_used(batch_id, patch, valence, valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Iter Batch** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."))
+    }
+    .map_err(|e| anyhow!("{}", e))?;
+    builder
+        .commit()
         .await
         .map_err(|e| anyhow!("{}", e))?;
     Ok(())
 }
 
 async fn maybe_complete_batch(batch_id: &str, valence: &Valence) -> anyhow::Result<()> {
-    let batch = ValenceIterBatch::get_used(batch_id, valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Batch** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
+    let batch = ValenceIterBatch::get(batch_id, valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Batch** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
         .await
         .map_err(|e| anyhow!("{}", e))?
         .context("batch missing")?;
     let done = *batch.processed() + *batch.skipped() + *batch.failed();
     if done >= *batch.row_count() {
-        ValenceIterBatch::merge_used(
-            batch_id,
-            serde_json::json!({
-                "status": "completed",
-                "completed_at": Utc::now().timestamp(),
-            }),
-            valence,
-            valence::use_!(r"In **Valence platform iter and deletion**, we **update Valence Iter Batch** in place so saved changes apply on the next read. The same actors who can run **Valence platform iter and deletion** use the updated values; this step is not a silent copy to an external marketing system."),
-        )
-        .await
-        .map_err(|e| anyhow!("{}", e))?;
+        batch
+            .get_mutable(
+                valence,
+                valence::use_!(r"In **Valence platform iter and deletion**, we **load the iter batch as a mutable builder** so it can be marked completed. The same actors who can run **Valence platform iter and deletion** use the updated values."),
+            )
+            .set_status(ValenceIterBatchStatus::Completed)
+            .and_then(|b| b.set_completed_at(Utc::now()))
+            .map_err(|e| anyhow!("{}", e))?
+            .commit()
+            .await
+            .map_err(|e| anyhow!("{}", e))?;
     }
     Ok(())
 }
@@ -149,7 +159,7 @@ pub async fn run_valence_iter_row_worker(
     iter_name: String,
     table_name: String,
 ) -> anyhow::Result<()> {
-    let run = match ValenceIterRun::get_used(&run_id, &valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Run** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
+    let run = match ValenceIterRun::get(&run_id, &valence, valence::use_!(r"In **Valence platform iter and deletion**, we **load Valence Iter Run** so the application can decide what to do next in this workflow. The result is used by **Valence platform iter and deletion** logic—not necessarily displayed on a page unless that feature’s UI shows it."))
         .await
         .map_err(|e| anyhow!("{}", e))?
     {
@@ -184,7 +194,7 @@ pub async fn run_valence_iter_row_worker(
                 Utc::now(),
             )
             .map_err(|e2| anyhow!("{}", e2))?;
-            ValenceIterRowError::create_used(err, &valence, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Iter Row Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
+            ValenceIterRowError::create(err, &valence, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Iter Row Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
                 .await
                 .map_err(|e2| anyhow!("{}", e2))?;
             bump_run_field(&run_id, "failed_rows", 1, &valence).await?;
@@ -206,7 +216,7 @@ pub async fn run_valence_iter_row_worker(
                 Utc::now(),
             )
             .map_err(|e2| anyhow!("{}", e2))?;
-            ValenceIterRowError::create_used(err, &valence, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Iter Row Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
+            ValenceIterRowError::create(err, &valence, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Iter Row Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
                 .await
                 .map_err(|e2| anyhow!("{}", e2))?;
             bump_run_field(&run_id, "failed_rows", 1, &valence).await?;
@@ -233,7 +243,7 @@ pub async fn run_valence_iter_row_worker(
             Utc::now(),
         )
         .map_err(|e2| anyhow!("{}", e2))?;
-        ValenceIterRowError::create_used(err, &valence, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Iter Row Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
+        ValenceIterRowError::create(err, &valence, valence::use_!(r"When **Valence platform iter and deletion** needs to persist work, we **save Valence Iter Row Error** so the next step in that feature can continue with the latest values. People and services allowed for **Valence platform iter and deletion** use this data for that workflow—not as a general export of unrelated personal fields."))
             .await
             .map_err(|e2| anyhow!("{}", e2))?;
         bump_run_field(&run_id, "failed_rows", 1, &valence).await?;
