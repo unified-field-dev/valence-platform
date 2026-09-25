@@ -92,10 +92,7 @@ async fn bump_run_field(
         _ => return Err(anyhow!("unknown run counter field {}", field)),
     }
     .map_err(|e| anyhow!("{}", e))?;
-    builder
-        .commit()
-        .await
-        .map_err(|e| anyhow!("{}", e))?;
+    builder.commit().await.map_err(|e| anyhow!("{}", e))?;
     Ok(())
 }
 
@@ -120,10 +117,7 @@ async fn bump_batch_field(
         _ => return Err(anyhow!("unknown batch counter field {}", field)),
     }
     .map_err(|e| anyhow!("{}", e))?;
-    builder
-        .commit()
-        .await
-        .map_err(|e| anyhow!("{}", e))?;
+    builder.commit().await.map_err(|e| anyhow!("{}", e))?;
     Ok(())
 }
 

@@ -94,9 +94,7 @@ pub async fn run_valence_deletion_step_worker(
         .and_then(|b| b.set_status(ValenceDeletionStepStatus::Skipped))
         .and_then(|b| b.set_completed_at(Utc::now()));
         if let Ok(mutable) = skip {
-            let _ = mutable
-                .commit()
-                .await;
+            let _ = mutable.commit().await;
         }
         return Ok(());
     }

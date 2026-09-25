@@ -49,7 +49,7 @@
 //! )
 //! .await?;
 //! // Chronon accepted run_now for job valence-iter-orchestrator with {"run_id": run_id}.
-//! assert!(!run_id.is_empty());
+//! assert_ne!(run_id, "");
 //! ```
 //!
 //! **Outcome:** a `pending` [`crate::ValenceIterRun`] row exists and Chronon has accepted

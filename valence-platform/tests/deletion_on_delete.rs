@@ -243,7 +243,7 @@ async fn tm_v3_cascade_child_runs_delete_side_effect() {
         run.get("status").and_then(|s| s.as_str()),
         Some("completed")
     );
-    assert!(QueryCore::get_record_json("tm_v3_child", "c1", &boot, valence::use_!(r#"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."#))
+    assert!(QueryCore::get_record_json("tm_v3_child", "c1", &boot, valence::use_!(r"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."))
         .await
         .unwrap()
         .is_none());
@@ -326,7 +326,7 @@ async fn tm_v3_restrict_aborts_without_side_effect() {
         .unwrap();
     assert_eq!(run.get("status").and_then(|s| s.as_str()), Some("failed"));
     assert!(
-        QueryCore::get_record_json("tm_v3_restrict_child", "rc1", &boot, valence::use_!(r#"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."#))
+        QueryCore::get_record_json("tm_v3_restrict_child", "rc1", &boot, valence::use_!(r"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."))
             .await
             .unwrap()
             .is_some(),
@@ -367,7 +367,7 @@ async fn tm_s1_set_null_via_apply_under_update_deny() {
     .await
     .expect("set null despite Update deny");
 
-    let row = QueryCore::get_record_json("tm_s1_child", "c1", &v, valence::use_!(r#"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."#))
+    let row = QueryCore::get_record_json("tm_s1_child", "c1", &v, valence::use_!(r"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."))
         .await
         .unwrap()
         .unwrap();
@@ -422,12 +422,12 @@ async fn tm_s1_set_null_via_inline_orchestrator() {
         Some("completed")
     );
 
-    let child = QueryCore::get_record_json("tm_s1_child", "c1", &boot, valence::use_!(r#"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."#))
+    let child = QueryCore::get_record_json("tm_s1_child", "c1", &boot, valence::use_!(r"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."))
         .await
         .unwrap()
         .expect("child kept");
     assert!(child.get("parent_id").unwrap().is_null());
-    assert!(QueryCore::get_record_json("tm_s1_parent", "p1", &boot, valence::use_!(r#"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."#))
+    assert!(QueryCore::get_record_json("tm_s1_parent", "p1", &boot, valence::use_!(r"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."))
         .await
         .unwrap()
         .is_none());
@@ -533,7 +533,14 @@ async fn tm_s2_remove_edge_via_inline_orchestrator() {
         .unwrap();
     let from = valence::RecordId::new("tm_s2_parent", "p1");
     let to = valence::RecordId::new("tm_s2_peer", "t1");
-    boot.relate_edge("tm_s2_edge", &from, &to).await.unwrap();
+    boot.relate_edge(
+        "tm_s2_edge",
+        &from,
+        &to,
+        valence::use_!(r"**Test:** Fixture edge create for `deletion_on_delete` so the suite can assert remove-edge deletion via the inline orchestrator. CI and developers running the suite only."),
+    )
+    .await
+    .unwrap();
 
     let run_id = DeletionService::create_run(
         "tm_s2_parent",
@@ -556,13 +563,16 @@ async fn tm_s2_remove_edge_via_inline_orchestrator() {
         run.get("status").and_then(|s| s.as_str()),
         Some("completed")
     );
-    assert!(backend
-        .get_edge_targets(&from, "tm_s2_edge")
-        .await
-        .unwrap()
-        .is_empty());
+    assert_eq!(
+        backend
+            .get_edge_targets(&from, "tm_s2_edge")
+            .await
+            .unwrap()
+            .len(),
+        0
+    );
     assert!(
-        QueryCore::get_record_json("tm_s2_peer", "t1", &boot, valence::use_!(r#"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."#))
+        QueryCore::get_record_json("tm_s2_peer", "t1", &boot, valence::use_!(r"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."))
             .await
             .unwrap()
             .is_some(),
@@ -629,11 +639,11 @@ async fn tm_s6_mixed_cascade_and_set_null() {
         run.get("status").and_then(|s| s.as_str()),
         Some("completed")
     );
-    assert!(QueryCore::get_record_json("tm_s6_cascade", "c1", &boot, valence::use_!(r#"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."#))
+    assert!(QueryCore::get_record_json("tm_s6_cascade", "c1", &boot, valence::use_!(r"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."))
         .await
         .unwrap()
         .is_none());
-    let kept = QueryCore::get_record_json("tm_s6_setnull", "s1", &boot, valence::use_!(r#"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."#))
+    let kept = QueryCore::get_record_json("tm_s6_setnull", "s1", &boot, valence::use_!(r"**Test:** Fixture row load for `deletion_on_delete` so the suite can assert on_delete cascade, set-null, and restrict outcomes. CI and developers running the suite only."))
         .await
         .unwrap()
         .expect("setnull child kept");
@@ -672,8 +682,8 @@ async fn tm_s7_live_restrict_via_orchestrator() {
     let dag = valence::deletion::dag::DeletionDag::compute("tm_v3_restrict_parent", "rp2", &boot)
         .await
         .unwrap();
-    assert!(!dag.restrict_violations.is_empty());
-    assert!(dag.nodes.is_empty());
+    assert_ne!(dag.restrict_violations.len(), 0);
+    assert_eq!(dag.nodes.len(), 0);
 
     let run_id = DeletionService::create_run(
         "tm_v3_restrict_parent",
