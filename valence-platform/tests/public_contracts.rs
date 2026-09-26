@@ -185,7 +185,7 @@ async fn paging_count_and_page_empty_table_happy() {
     let ids = page_row_ids(&v, "contract_empty_tbl", None, 5)
         .await
         .expect("page empty");
-    assert!(ids.is_empty());
+    assert_eq!(ids.len(), 0);
 }
 
 #[tokio::test]
@@ -195,7 +195,7 @@ async fn deletion_service_create_get_list_happy() {
     let run_id = DeletionService::create_run("widget", "w1", actor, &v)
         .await
         .expect("create_run");
-    assert!(!run_id.is_empty());
+    assert_ne!(run_id, "");
 
     let doc = DeletionService::get_run_json(&run_id, &v)
         .await

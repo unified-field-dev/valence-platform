@@ -151,7 +151,14 @@ async fn k_hyb_1_delete_target_clears_incoming_edges_happy() {
         .unwrap();
     let from = valence::RecordId::new(PARENT, "p1");
     let to = valence::RecordId::new(PEER, "t1");
-    boot.relate_edge(EDGE, &from, &to).await.unwrap();
+    boot.relate_edge(
+        EDGE,
+        &from,
+        &to,
+        valence::use_!(r"**Test:** Fixture edge create for `hybrid_m2m_delete` so the suite can assert cascade delete removes the peer edge. CI and developers running the suite only."),
+    )
+    .await
+    .unwrap();
 
     // Precondition: reverse lookup sees the source (hybrid must implement get_edge_sources).
     let sources = backend.get_edge_sources(&to, EDGE).await.unwrap();
@@ -195,14 +202,14 @@ async fn k_hyb_1_delete_target_clears_incoming_edges_happy() {
         "incoming edges to deleted peer must be cleared"
     );
     assert!(
-        QueryCore::get_record_json(PARENT, "p1", &boot)
+        QueryCore::get_record_json(PARENT, "p1", &boot, valence::use_!(r"**Test:** Fixture row load for `hybrid_m2m_delete` so the suite can assert whether cascade delete removed or kept the peer. CI and developers running the suite only."))
             .await
             .unwrap()
             .is_some(),
         "parent peer must remain"
     );
     assert!(
-        QueryCore::get_record_json(PEER, "t1", &boot)
+        QueryCore::get_record_json(PEER, "t1", &boot, valence::use_!(r"**Test:** Fixture row load for `hybrid_m2m_delete` so the suite can assert whether cascade delete removed or kept the peer. CI and developers running the suite only."))
             .await
             .unwrap()
             .is_none(),

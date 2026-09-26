@@ -129,8 +129,9 @@ mod generated {
 
 pub use generated::{
     ValenceDeletionError, ValenceDeletionStep, ValenceDeletionStepAction,
-    ValenceDeletionStepStatus, ValenceIterBatch, ValenceIterBatchStatus, ValenceIterRowError,
-    ValenceIterRowErrorErrorKind, ValenceIterRun, ValenceIterRunStatus,
+    ValenceDeletionStepMutable, ValenceDeletionStepStatus, ValenceIterBatch,
+    ValenceIterBatchMutable, ValenceIterBatchStatus, ValenceIterRowError,
+    ValenceIterRowErrorErrorKind, ValenceIterRun, ValenceIterRunMutable, ValenceIterRunStatus,
 };
 
 pub mod deletion;

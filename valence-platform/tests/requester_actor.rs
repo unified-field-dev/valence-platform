@@ -195,7 +195,7 @@ fn parse_requested_by_accepts_string_and_object() {
     let bad = parse_requested_by_actor(&json!("not-json-actor"));
     let err = bad.expect_err("garbage requested_by must fail");
     let msg = err.to_string();
-    assert!(!msg.is_empty(), "parse error must carry a message");
+    assert_ne!(msg, "", "parse error must carry a message");
     assert!(
         msg.contains("requested_by")
             || msg.contains("actor")
