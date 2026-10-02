@@ -3,7 +3,7 @@
 // Field is `target_table` (not `table_name`) to avoid colliding with generated `table_name()` getters vs `Model::table_name()`.
 
 use ::valence::prelude::*;
-use ::valence::privacy_policies::common::SYSTEM_ONLY;
+use ::valence::privacy_policies::common::{AUTHENTICATED, SYSTEM_ONLY};
 
 
 valence_schema! {
@@ -21,7 +21,7 @@ valence_schema! {
         policies: {
             read: {
                 always_allow: [],
-                allow: [SYSTEM_ONLY],
+                allow: [AUTHENTICATED],
                 block: [],
                 always_block: [],
             },

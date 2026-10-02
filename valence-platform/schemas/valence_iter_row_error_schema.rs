@@ -1,7 +1,7 @@
 // ValenceIterRowError — included from crate root (`mod valence_iter_row_error_schema` in lib.rs).
 
 use ::valence::prelude::*;
-use ::valence::privacy_policies::common::SYSTEM_ONLY;
+use ::valence::privacy_policies::common::{AUTHENTICATED, SYSTEM_ONLY};
 
 
 valence_schema! {
@@ -19,7 +19,7 @@ valence_schema! {
         policies: {
             read: {
                 always_allow: [],
-                allow: [SYSTEM_ONLY],
+                allow: [AUTHENTICATED],
                 block: [],
                 always_block: [],
             },
