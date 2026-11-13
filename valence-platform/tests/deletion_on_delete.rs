@@ -100,6 +100,8 @@ fn schema_meta(
         side_effects: Vec::new(),
         iters: Vec::new(),
         composite_key: Vec::new(),
+        retired_fields: Vec::new(),
+        partition_export: None,
         traits: Vec::new(),
         ttl: None,
         ownership: None,
@@ -131,6 +133,7 @@ valence::inventory::submit! {
                 reverse_field: Some("parent_id".into()),
                 edge_table: None,
                 target_trait: None,
+                edge_policy: None,
             }],
             false,
         )
@@ -158,6 +161,7 @@ valence::inventory::submit! {
                 reverse_field: Some("parent_id".into()),
                 edge_table: None,
                 target_trait: None,
+                edge_policy: None,
             }],
             false,
         )
@@ -267,6 +271,7 @@ valence::inventory::submit! {
                 reverse_field: Some("parent_id".into()),
                 edge_table: None,
                 target_trait: None,
+                edge_policy: None,
             }],
             false,
         )
@@ -450,6 +455,7 @@ valence::inventory::submit! {
                 reverse_field: None,
                 edge_table: Some("tm_s2_edge".into()),
                 target_trait: None,
+                edge_policy: None,
             }],
             false,
         )
@@ -478,6 +484,7 @@ valence::inventory::submit! {
                     reverse_field: Some("parent_id".into()),
                     edge_table: None,
                     target_trait: None,
+                    edge_policy: None,
                 },
                 SchemaConnection {
                     name: "setnull_kids".into(),
@@ -492,6 +499,7 @@ valence::inventory::submit! {
                     reverse_field: Some("parent_id".into()),
                     edge_table: None,
                     target_trait: None,
+                    edge_policy: None,
                 },
             ],
             false,

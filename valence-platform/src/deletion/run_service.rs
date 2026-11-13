@@ -161,30 +161,11 @@ impl DeletionService {
     }
 
     /// Count in-flight runs requested by the given actor JSON (`requested_by` field).
+    ///
+    /// Delegates to Valence's own count, which compiles the query for the engine that
+    /// stores the runs.
     pub async fn count_active_runs_for_requester(requested_by: &str, v: &Valence) -> Result<u64> {
-        let sys = system_valence(v);
-        let q = concat!(
-            "SELECT count() AS n FROM valence_deletion_run ",
-            "WHERE requested_by = $requested_by ",
-            "AND status IN ['queued', 'scanning', 'processing'] GROUP ALL"
-        );
-        let compiled = CompiledQuery::new(
-            q.to_string(),
-            vec![("requested_by".to_string(), json!(requested_by))],
-        );
-        let backend = sys.backend_for_table("valence_deletion_run")?;
-        let rows = backend
-            .execute_compiled_query(&compiled)
-            .await
-            .map_err(|e| Error::database(e.to_string()))?;
-        Ok(rows
-            .first()
-            .and_then(|row| {
-                row.get("n")
-                    .or_else(|| row.get("count"))
-                    .and_then(|v| v.as_u64().or_else(|| v.as_f64().map(|f| f as u64)))
-            })
-            .unwrap_or(0))
+        valence::deletion::DeletionService::count_active_runs_for_requester(requested_by, v).await
     }
 
     /// Paged listing for admin UI (newest first).

@@ -166,9 +166,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "boson-backend-mem"
+version = "0.1.4"
+source = "git+https://github.com/unified-field-dev/boson?branch=main#238083ca833fb5fad5be8d9b5e7f5dc2ca65be4d"
+dependencies = [
+ "async-trait",
+ "boson-core",
+ "chrono",
+ "uuid",
+]
+
+[[package]]
 name = "boson-coordinator"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/boson-coordinator?branch=main#df6a4b1182345e57c77ab98e2a0302f72ec052a6"
+source = "git+https://github.com/unified-field-dev/boson-coordinator?branch=main#72f3652fe0b0e57dbf3ac6021cb9b78253d01202"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -183,7 +194,7 @@ dependencies = [
 [[package]]
 name = "boson-core"
 version = "0.1.4"
-source = "git+https://github.com/unified-field-dev/boson?branch=main#3af2ba3ba83b7369cd87f8aa4a8926bcdc009c90"
+source = "git+https://github.com/unified-field-dev/boson?branch=main#238083ca833fb5fad5be8d9b5e7f5dc2ca65be4d"
 dependencies = [
  "async-trait",
  "chrono",
@@ -196,7 +207,7 @@ dependencies = [
 [[package]]
 name = "boson-macros"
 version = "0.1.4"
-source = "git+https://github.com/unified-field-dev/boson?branch=main#3af2ba3ba83b7369cd87f8aa4a8926bcdc009c90"
+source = "git+https://github.com/unified-field-dev/boson?branch=main#238083ca833fb5fad5be8d9b5e7f5dc2ca65be4d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -206,7 +217,7 @@ dependencies = [
 [[package]]
 name = "boson-runtime"
 version = "0.1.4"
-source = "git+https://github.com/unified-field-dev/boson?branch=main#3af2ba3ba83b7369cd87f8aa4a8926bcdc009c90"
+source = "git+https://github.com/unified-field-dev/boson?branch=main#238083ca833fb5fad5be8d9b5e7f5dc2ca65be4d"
 dependencies = [
  "async-trait",
  "boson-core",
@@ -220,7 +231,7 @@ dependencies = [
 [[package]]
 name = "boson-telemetry"
 version = "0.1.4"
-source = "git+https://github.com/unified-field-dev/boson?branch=main#3af2ba3ba83b7369cd87f8aa4a8926bcdc009c90"
+source = "git+https://github.com/unified-field-dev/boson?branch=main#238083ca833fb5fad5be8d9b5e7f5dc2ca65be4d"
 dependencies = [
  "serde_json",
 ]
@@ -228,7 +239,7 @@ dependencies = [
 [[package]]
 name = "boson-valence-identity"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/boson-valence-identity?branch=main#26ed6e7259c029613b9d32c3e888776e91c27d83"
+source = "git+https://github.com/unified-field-dev/boson-valence-identity?branch=main#d2a6794f0c393a16b82ebe2c174b2086de0534eb"
 dependencies = [
  "boson-core",
  "serde",
@@ -303,7 +314,7 @@ dependencies = [
 [[package]]
 name = "chronon-coordinator"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/chronon-coordinator?branch=main#43ee393f33270ee6d07bd610a85aa5804621c921"
+source = "git+https://github.com/unified-field-dev/chronon-coordinator?branch=main#7f394c2e0b078dc1faa51d663afa4436db8d3d76"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -321,7 +332,7 @@ dependencies = [
 [[package]]
 name = "chronon-coordinator-macros"
 version = "0.1.0"
-source = "git+https://github.com/unified-field-dev/chronon-coordinator-macros?branch=main#e5a525806ccec70c95e150a22cc94aa71c23f831"
+source = "git+https://github.com/unified-field-dev/chronon-coordinator-macros?branch=main#5b7eb344b4ad1822dea6dc71e4ff5dba116ea4ab"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -332,7 +343,7 @@ dependencies = [
 [[package]]
 name = "chronon-core"
 version = "0.1.4"
-source = "git+https://github.com/unified-field-dev/chronon?branch=main#25f4c532d00dec8f9748014e7183b6c4a77c6f0b"
+source = "git+https://github.com/unified-field-dev/chronon?branch=main#e89e029bbbfe4b7c022ee7147ffe17add706f831"
 dependencies = [
  "async-trait",
  "chrono",
@@ -346,7 +357,7 @@ dependencies = [
 [[package]]
 name = "chronon-executor"
 version = "0.1.4"
-source = "git+https://github.com/unified-field-dev/chronon?branch=main#25f4c532d00dec8f9748014e7183b6c4a77c6f0b"
+source = "git+https://github.com/unified-field-dev/chronon?branch=main#e89e029bbbfe4b7c022ee7147ffe17add706f831"
 dependencies = [
  "chrono",
  "chronon-core",
@@ -361,7 +372,7 @@ dependencies = [
 [[package]]
 name = "chronon-scheduler"
 version = "0.1.4"
-source = "git+https://github.com/unified-field-dev/chronon?branch=main#25f4c532d00dec8f9748014e7183b6c4a77c6f0b"
+source = "git+https://github.com/unified-field-dev/chronon?branch=main#e89e029bbbfe4b7c022ee7147ffe17add706f831"
 dependencies = [
  "chrono",
  "chrono-tz",
@@ -379,7 +390,7 @@ dependencies = [
 [[package]]
 name = "chronon-telemetry"
 version = "0.1.4"
-source = "git+https://github.com/unified-field-dev/chronon?branch=main#25f4c532d00dec8f9748014e7183b6c4a77c6f0b"
+source = "git+https://github.com/unified-field-dev/chronon?branch=main#e89e029bbbfe4b7c022ee7147ffe17add706f831"
 dependencies = [
  "parking_lot",
  "tracing",
@@ -2161,7 +2172,7 @@ dependencies = [
 [[package]]
 name = "uf-valence"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "uf-valence-backend-hybrid",
  "uf-valence-backend-indradb",
@@ -2175,7 +2186,7 @@ dependencies = [
 [[package]]
 name = "uf-valence-backend-hybrid"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "async-trait",
  "serde",
@@ -2188,7 +2199,7 @@ dependencies = [
 [[package]]
 name = "uf-valence-backend-indradb"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "async-trait",
  "indradb-lib",
@@ -2201,7 +2212,7 @@ dependencies = [
 [[package]]
 name = "uf-valence-backend-mem"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "async-trait",
  "serde_json",
@@ -2212,7 +2223,7 @@ dependencies = [
 [[package]]
 name = "uf-valence-backend-postgres"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "async-trait",
  "serde_json",
@@ -2225,7 +2236,7 @@ dependencies = [
 [[package]]
 name = "uf-valence-backend-sql"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "serde",
  "serde_json",
@@ -2240,7 +2251,7 @@ dependencies = [
 [[package]]
 name = "uf-valence-backend-sqlite"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "async-trait",
  "serde_json",
@@ -2254,7 +2265,7 @@ dependencies = [
 [[package]]
 name = "uf-valence-codegen"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "anyhow",
  "prettyplease",
@@ -2268,7 +2279,7 @@ dependencies = [
 [[package]]
 name = "uf-valence-core"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "async-trait",
  "chrono",
@@ -2287,7 +2298,7 @@ dependencies = [
 [[package]]
 name = "uf-valence-macros"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2298,7 +2309,7 @@ dependencies = [
 [[package]]
 name = "uf-valence-schema-dsl"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2308,7 +2319,7 @@ dependencies = [
 [[package]]
 name = "uf-valence-telemetry"
 version = "0.1.5"
-source = "git+https://github.com/unified-field-dev/valence?branch=main#6a27698507c61eb5ce0287e28798b8711f14a994"
+source = "git+https://github.com/unified-field-dev/valence?branch=main#ef2ce1ea8bc23655c2eb2f17b557213bf04451d5"
 dependencies = [
  "serde_json",
 ]
@@ -2379,6 +2390,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "axum",
+ "boson-backend-mem",
  "boson-coordinator",
  "boson-core",
  "boson-macros",

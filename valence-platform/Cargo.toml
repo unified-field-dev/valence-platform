@@ -40,5 +40,9 @@ boson-runtime = { workspace = true, default-features = false }
 boson-valence-identity = { workspace = true }
 boson-macros = { workspace = true }
 
+[dev-dependencies]
+# The Boson-queue deletion test drives step jobs through an in-memory queue.
+boson-backend-mem = { workspace = true }
+
 [build-dependencies]
 valence-codegen = { workspace = true }

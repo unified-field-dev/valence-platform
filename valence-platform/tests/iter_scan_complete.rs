@@ -72,6 +72,8 @@ fn probe_schema_meta() -> &'static SchemaMetadata {
         side_effects: Vec::new(),
         iters: Vec::new(),
         composite_key: Vec::new(),
+        retired_fields: Vec::new(),
+        partition_export: None,
         traits: Vec::new(),
         ttl: None,
         ownership: None,

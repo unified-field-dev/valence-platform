@@ -13,10 +13,10 @@ use boson_core::BosonError;
 use chrono::Utc;
 use serde_json::Value;
 use tokio::time::{sleep, Duration};
-use valence::__internal::CompiledQuery;
 use valence::deletion::dag::DeletionDag;
 use valence::Model;
 use valence::Valence;
+use valence::{IntPredicate, QueryCore, StringPredicate};
 
 const RATE_LIMIT_BACKOFF_START_MS: u64 = 1000;
 const RATE_LIMIT_BACKOFF_MAX_MS: u64 = 30_000;
@@ -60,34 +60,30 @@ async fn enqueue_step_job(valence: &Valence, run_id: &str, step_id: &str) -> any
     }
 }
 
-async fn count_wave_inflight(valence: &Valence, run_id: &str, depth: u32) -> anyhow::Result<u64> {
-    let q = concat!(
-        "SELECT VALUE count FROM (SELECT count() AS count FROM valence_deletion_step ",
-        "WHERE run_id = $run AND depth = $depth AND (status = 'queued' OR status = 'in_progress') GROUP ALL)"
-    );
-    let compiled = CompiledQuery::new(
-        q.to_string(),
-        vec![
-            ("run".to_string(), Value::String(run_id.to_string())),
-            (
-                "depth".to_string(),
-                Value::Number(serde_json::Number::from(depth as i64)),
-            ),
-        ],
-    );
-    let backend = valence
-        .backend_for_table("valence_deletion_step")
-        .map_err(|e| anyhow!("{}", e))?;
-    let rows = backend
-        .execute_compiled_query(&compiled)
-        .await
-        .map_err(|e| anyhow!("{}", e))?;
-    let n = rows
-        .into_iter()
-        .next()
-        .and_then(|v| v.as_u64().or_else(|| v.as_i64().map(|i| i as u64)))
-        .unwrap_or(0);
-    Ok(n)
+/// Whether any step of `run_id` at `depth` is still queued or in progress.
+///
+/// Built with [`QueryCore`] so Valence compiles it for whichever engine stores the steps.
+async fn wave_has_inflight(valence: &Valence, run_id: &str, depth: u32) -> anyhow::Result<bool> {
+    for status in [
+        ValenceDeletionStepStatus::Queued,
+        ValenceDeletionStepStatus::InProgress,
+    ] {
+        let rows: Vec<Value> = QueryCore::new("valence_deletion_step".to_string())
+            .where_string("run_id".to_string(), StringPredicate::Equals(run_id.to_string()))
+            .where_int("depth".to_string(), IntPredicate::Equals(i64::from(depth)))
+            .where_string(
+                "status".to_string(),
+                StringPredicate::Equals(status.as_str().to_string()),
+            )
+            .limit(1)
+            .execute(valence, valence::use_!(r"In **Valence platform iter and deletion**, we **check for unfinished deletion steps in one wave** so the orchestrator starts the next wave only after the current one is done. This is an internal system check, not shown to operators or end users."))
+            .await
+            .map_err(|e| anyhow!("{}", e))?;
+        if !rows.is_empty() {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }
 
 async fn wait_wave(valence: &Valence, run_id: &str, depth: u32) -> anyhow::Result<()> {
@@ -101,7 +97,7 @@ async fn wait_wave(valence: &Valence, run_id: &str, depth: u32) -> anyhow::Resul
         if st.as_deref() == Some("cancelled") {
             return Ok(());
         }
-        if count_wave_inflight(valence, run_id, depth).await? == 0 {
+        if !wave_has_inflight(valence, run_id, depth).await? {
             break;
         }
         sleep(Duration::from_millis(POLL_INTERVAL_MS)).await;
@@ -109,26 +105,91 @@ async fn wait_wave(valence: &Valence, run_id: &str, depth: u32) -> anyhow::Resul
     Ok(())
 }
 
+/// Mark every still-queued step of a cancelled run `skipped`.
 async fn mark_remaining_queued_skipped(valence: &Valence, run_id: &str) -> anyhow::Result<()> {
-    let q = concat!(
-        "UPDATE valence_deletion_step SET status = 'skipped', completed_at = time::now() ",
-        "WHERE run_id = $run AND status = 'queued'"
-    );
-    let compiled = CompiledQuery::new(
-        q.to_string(),
-        vec![("run".to_string(), Value::String(run_id.to_string()))],
-    );
-    let backend = valence
-        .backend_for_table("valence_deletion_step")
-        .map_err(|e| anyhow!("{}", e))?;
-    backend
-        .execute_compiled_query(&compiled)
-        .await
-        .map_err(|e| anyhow!("{}", e))?;
-    Ok(())
+    // Each pass skips up to one page of steps, and skipped steps leave the filter, so the
+    // next pass sees the rest. A run has at most one step per DAG node.
+    loop {
+        let mut query = ValenceDeletionStep::query(
+            valence,
+            valence::use_!(
+                r"In **Valence platform iter and deletion**, we **list the queued steps of a cancelled deletion run** so each can be marked skipped instead of running. This is an internal system step, not shown to operators or end users."
+            ),
+        );
+        query.inner = query
+            .inner
+            .where_string(
+                "run_id".to_string(),
+                StringPredicate::Equals(run_id.to_string()),
+            )
+            .where_string(
+                "status".to_string(),
+                StringPredicate::Equals(ValenceDeletionStepStatus::Queued.as_str().to_string()),
+            );
+        let queued = query.await.map_err(|e| anyhow!("{}", e))?;
+        if queued.is_empty() {
+            return Ok(());
+        }
+        for step in queued {
+            step.get_mutable(
+                valence,
+                valence::use_!(r"In **Valence platform iter and deletion**, we **load the deletion step as a mutable builder** so it can be marked skipped after its run was cancelled. The same actors who can run **Valence platform iter and deletion** use the updated values."),
+            )
+            .set_status(ValenceDeletionStepStatus::Skipped)
+            .and_then(|b| b.set_completed_at(Utc::now()))
+            .map_err(|e| anyhow!("{}", e))?
+            .commit()
+            .await
+            .map_err(|e| anyhow!("{}", e))?;
+        }
+    }
 }
 
+/// Run [`orchestrate`]; if it fails partway, mark the run `failed` with the error, so a
+/// run whose orchestrator died never sits in `scanning` or `processing` for good.
 async fn run_valence_deletion_orchestrator_impl(
+    boot_valence: Valence,
+    run_id: String,
+    dispatch: ValenceDeletionOrchestratorStepDispatch,
+) -> anyhow::Result<()> {
+    let result = orchestrate(boot_valence.clone(), run_id.clone(), dispatch).await;
+    if let Err(e) = &result {
+        mark_run_failed(&boot_valence, &run_id, e).await;
+    }
+    result
+}
+
+/// Merge `failed` onto a run this orchestrator had started (`scanning` or `processing`).
+/// A run still `queued` was never claimed here, and a terminal run is left as it is.
+async fn mark_run_failed(boot_valence: &Valence, run_id: &str, error: &anyhow::Error) {
+    let sys = boot_valence.with_actor(valence::Actor::System {
+        operation: "valence_deletion_orchestrator".into(),
+    });
+    let status = match DeletionService::get_run_json(run_id, &sys).await {
+        Ok(Some(run)) => run
+            .get("status")
+            .and_then(|s| s.as_str())
+            .map(str::to_string),
+        Ok(None) => return,
+        Err(e) => {
+            log::warn!("deletion run {run_id}: status unreadable after orchestrator error: {e}");
+            return;
+        }
+    };
+    if !matches!(status.as_deref(), Some("scanning" | "processing")) {
+        return;
+    }
+    let patch = serde_json::json!({
+        "status": "failed",
+        "error_message": format!("orchestrator failed: {error}"),
+        "completed_at": Utc::now(),
+    });
+    if let Err(e) = DeletionService::merge_run(run_id, patch, &sys).await {
+        log::warn!("deletion run {run_id}: could not mark failed: {e}");
+    }
+}
+
+async fn orchestrate(
     boot_valence: Valence,
     run_id: String,
     dispatch: ValenceDeletionOrchestratorStepDispatch,
